@@ -80,14 +80,14 @@ Why: 입력한 값을 다음 단계에서 서버로 보내려면 기억해 둬�
 
 | 커밋 | 언제 |
 |---|---|
-| [장] 시작 | plan 승인 뒤. spec, mockup, plan, tasks를 담는다 |
+| [장] 시작 | task 승인 뒤. spec, mockup, plan, tasks를 담는다 |
 | [장] 완료 | tasks.md가 모두 체크된 뒤. 태그 done/<장>을 단다 |
 | [장] 수정 시작 | fix로 장을 다시 열 때 |
 | [장] 수정 완료 | fix가 끝날 때 |
 
 ## 승인
 
-- spec, mockup, plan에서 사람의 승인을 받는다
+- spec, mockup, plan, task에서 사람의 승인을 받는다
 - fix는 수정 계획에서 승인을 받는다
 - 승인 뒤에는 이어서 진행한다. 넘침이 나오면 멈추고 묻는다
 

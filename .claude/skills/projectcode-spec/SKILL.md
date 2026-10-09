@@ -50,7 +50,7 @@ description: 장 하나의 spec.md를 만든다. 사람이 읽는 할 일 목록
 6. 보여주고 승인받기
    spec 전체를 채팅창에 보여준다.
    승인을 받으면 .projectcode/chapters/<장>/spec.md에 저장한다. 승인 전에는 저장하지 않는다.
-   커밋은 하지 않는다. plan 승인 뒤 [장] 시작 커밋에 함께 들어간다.
+   커밋은 하지 않는다. task 승인 뒤 [장] 시작 커밋에 함께 들어간다.
 
 7. 다음
    새 화면이 있으면 projectcode-mockup, 없으면 projectcode-plan이라고 알린다.
