@@ -37,7 +37,7 @@ description: 새 화면이 있는 장에서 만들기 전에 화면 모습을 �
 ## 순서
 
 1. 확인
-   spec.md에 화면이 없으면 건너뛴다. 다음은 projectcode-plan이라고 알린다.
+   spec.md에 화면 절이 없으면 건너뛴다. 다음은 projectcode-plan이라고 알린다.
 
 2. 읽기
    spec.md의 화면 그림과 흐름, base.css를 읽는다.
