@@ -58,14 +58,17 @@ async function takeRequest(shot) {
 }
 
 function writeList() {
-  const rows = spec.shots.map((s) => `| ${s.file} | ${spec.chapter} | ${s.task} | ${s.screen} | ${s.see} |`)
+  const rows = spec.shots.map((s) => {
+    const see = s.missing ? `${s.see} (fix 뒤 다시 찍지 못함)` : s.see
+    return `| ${s.file} | ${spec.chapter} | ${s.task} | ${s.screen} | ${see} |`
+  })
   const lines = ["# 캡처", "", "| 파일 | 장 | task | 찍은 화면 | 보이는 것 |", "|---|---|---|---|---|", ...rows, ""]
   writeFileSync(join(outDir, "captures.md"), lines.join("\n"))
 }
 
 const { chromium } = loadPlaywright()
 const browser = await chromium.launch()
-for (const shot of spec.shots.filter(isSelected)) {
+for (const shot of spec.shots.filter((s) => isSelected(s) && !s.missing)) {
   if (shot.request) await takeRequest(shot)
   else await takeScreen(browser, shot)
   console.log("찍음:", shot.file)

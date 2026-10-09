@@ -61,7 +61,8 @@ task마다 과정 사진을 찍어 둔다. 원고의 "여기까지 하면 이렇
 ## projectcode-fix가 부를 때
 
 - Kind는 fix다
-- Fixes: <고친 코드를 처음 만든 task 커밋 해시>를 더한다. git log에서 그 장의 Task 꼬리표로 찾는다
+- Fixes: <고친 코드를 처음 만든 task 커밋 해시>를 더한다. task의 근거에 적힌 고침 T번호로, git log에서 그 장의 Task 꼬리표를 찾는다
+- 과정 사진은 찍지 않는다. 메인 코드는 그 장 시점이 아니다. 사진은 fix가 샌드박스에서 찍는다
 
 ## project-setup 장일 때
 

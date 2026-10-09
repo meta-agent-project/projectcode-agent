@@ -96,3 +96,4 @@ description: 받은 폴더에서 앱을 실행해 장의 사진을 찍기만 한
 | steps | 찍기 전에 할 일. fill은 [라벨, 값], click은 버튼 글자 |
 | console | true면 콘솔 기록을 .console.txt로 남긴다 |
 | request | 화면 대신 API를 부른다. method, path, body |
+| missing | fix 뒤 다시 찍지 못한 사진. 찍지 않고 captures.md에 그렇게 적는다 |
