@@ -1,0 +1,94 @@
+/* projectcode 공통 CSS. 값은 아래 목록에서만 고른다. 새 값을 만들지 않는다. */
+
+:root {
+  /* 색 4개 */
+  --color-primary: #111111;    /* 글자, 테두리, 주 버튼 */
+  --color-secondary: #888888;  /* 보조 글자 */
+  --color-line: #e5e5e5;       /* 구분선 */
+  --color-bg: #ffffff;         /* 바탕 */
+
+  /* 글꼴 2개 */
+  --font-body: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  --font-mono: "JetBrains Mono", "Consolas", monospace;
+
+  /* 글자 크기 3개 */
+  --text-small: 13px;
+  --text-body: 15px;
+  --text-title: 22px;
+
+  /* 간격 3개. 여백, 마진, 사이 간격 모두 이것만 쓴다 */
+  --space-s: 8px;
+  --space-m: 16px;
+  --space-l: 32px;
+
+  /* 높이 1개, 모서리 2개 */
+  --height-control: 40px;
+  --radius-control: 999px;
+  --radius-card: 14px;
+
+  /* 너비 2개 */
+  --width-page: 960px;
+  --width-form: 420px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-primary);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-m) var(--space-l);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.header nav { display: flex; gap: var(--space-m); color: var(--color-secondary); font-size: var(--text-small); }
+
+.page { max-width: var(--width-page); margin: 0 auto; padding: var(--space-l); }
+
+.title { font-size: var(--text-title); font-weight: 700; margin: 0; }
+
+.stack { display: flex; flex-direction: column; gap: var(--space-m); }
+.row { display: flex; align-items: center; gap: var(--space-m); }
+
+.card {
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius-card);
+  padding: var(--space-l);
+}
+
+.field { display: flex; flex-direction: column; gap: var(--space-s); }
+.label { font-size: var(--text-small); color: var(--color-secondary); }
+
+.input {
+  height: var(--height-control);
+  padding: 0 var(--space-m);
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius-control);
+  font: inherit;
+  background: var(--color-bg);
+}
+
+.button {
+  height: var(--height-control);
+  padding: 0 var(--space-m);
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius-control);
+  background: var(--color-bg);
+  color: var(--color-primary);
+  font: inherit;
+  cursor: pointer;
+}
+
+.button-primary { background: var(--color-primary); color: var(--color-bg); }
+.button-text { border-color: transparent; color: var(--color-secondary); padding: 0 var(--space-s); }
+
+.muted { color: var(--color-secondary); font-size: var(--text-small); }
+.mono { font-family: var(--font-mono); font-size: var(--text-small); color: var(--color-secondary); }
