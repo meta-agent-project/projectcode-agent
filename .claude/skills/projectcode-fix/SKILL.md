@@ -50,7 +50,8 @@ description: 완료된 장을 고친다. 그 장을 다시 열고, 메인 코드
 
 8. 수정 완료
    roadmap에서 고친 장을 완료로, 멈춘 장을 진행 중으로 되돌린다.
-   사진, 도식, patch, roadmap.md를 커밋한다.
+   summary-code.md 끝에 고친 task를 더한다. 형식은 projectcode-task와 같다.
+   사진, 도식, patch, summary-code.md, roadmap.md를 커밋한다.
    제목: [장] 수정 완료
    본문: Chapter, Kind: docs
    done 태그는 옮기지 않는다.

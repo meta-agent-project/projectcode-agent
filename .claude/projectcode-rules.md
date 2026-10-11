@@ -20,6 +20,7 @@
     mockup.html
     plan.md
     tasks.md
+    summary-code.md   검수용 학생 코드 변경 요약
     captures/         화면 PNG, API 결과 JSON
     diagrams/         흐름, ERD, 폴더 구조도
     fixes/            fix 때 만든 그 장 시점 patch

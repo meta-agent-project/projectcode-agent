@@ -43,15 +43,57 @@ description: 승인된 plan으로 tasks.md에 체크박스 작업 순서를 만�
 1. 확인
    tasks.md의 모든 줄이 체크됐는지 본다. 남은 줄이 있으면 멈추고 그 줄을 알린다.
 
-2. 완료 처리
+2. 코드 요약
+   이 장의 커밋으로 summary-code.md를 쓴다. 아래 형식을 따른다.
+   강사가 이 파일로 장의 학생 코드를 검수한다.
+
+3. 완료 처리
    roadmap.md에서 이 장의 상태를 완료로 바꾼다.
-   captures/, diagrams/와 함께 커밋한다.
+   captures/, diagrams/, summary-code.md와 함께 커밋한다.
    제목: [장] 완료
    본문: Chapter, Kind: docs
    이 커밋에 태그 done/<장>을 단다.
 
-3. 다음
+4. 다음
    projectcode-wiki라고 알린다.
+
+## summary-code.md 형식
+
+- 학생 코드만 쓴다. 학생 코드 폴더는 contract.md의 폴더 표를 따른다
+- 테스트, 사진, 문서는 쓰지 않는다
+- task 순서로 쓴다. 테스트 보강, 고칠 task도 학생 코드가 바뀌면 넣는다
+- task마다 커밋 해시와 바뀐 파일 표를 쓴다
+- 새 파일은 전체 코드를 쓴다
+- 고친 파일은 git show <해시> -- <학생 코드 폴더>의 diff를 쓴다
+- 복사나 지움처럼 파일이 많으면 폴더와 개수만 쓴다
+- 학생 코드가 바뀌지 않은 task는 한 줄로 그렇다고 쓴다
+
+````
+# signup-form 코드 요약
+
+## T1 회원가입 화면 그리기
+커밋: 3f2a1bc
+
+| 파일 | 변경 |
+|---|---|
+| src/SignupForm.jsx | 새로 |
+| src/App.jsx | 고침 |
+
+```jsx
+// src/SignupForm.jsx
+export default function SignupForm() { ... }
+```
+
+```diff
+// src/App.jsx
+-  return <h1>Hello</h1>;
++  return <SignupForm />;
+```
+
+## T2 테스트 실행기
+커밋: 8c1d2e4
+- 학생 코드 변경 없음
+````
 
 ## tasks.md 형식
 
