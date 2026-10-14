@@ -47,6 +47,7 @@ description: 완료된 장을 고친다. 그 장을 다시 열고, 메인 코드
 
 7. 샌드박스
    서브에이전트에게 맡긴다. 아래 샌드박스 절대로 한다.
+   메인이 띄운 서버와 프론트는 먼저 끈다. 포트가 하나뿐이다.
 
 8. 수정 완료
    roadmap에서 고친 장을 완료로, 멈춘 장을 진행 중으로 되돌린다.
@@ -75,11 +76,9 @@ description: 완료된 장을 고친다. 그 장을 다시 열고, 메인 코드
    그 장의 테스트를 실행한다. 모두 통과해야 한다.
 
 3. 과정 사진 다시 찍기
-   고친 task 중 가장 앞 task부터 그 장의 마지막 task까지 하나씩 한다.
-   - 샌드박스를 그 task 커밋으로 옮기고 fixes/의 patch를 모두 붙인다
-   - projectcode-capture를 --task로 부른다. shots.json과 사진은 메인 저장소의 그 장 captures/를 쓴다
-   - patch가 붙지 않으면 그 사진을 지우고 shots.json의 그 줄에 "missing": true를 적는다
-   그다음 done 태그 지점에 patch를 모두 붙이고 장 끝 사진을 다시 찍는다.
+   projectcode-capture의 사진사 순서를 fix 때 방식으로 따른다.
+   고친 task 중 가장 앞 task부터 그 장의 마지막 task까지, 그다음 done 태그 지점의 장 끝 사진이다.
+   shots.json과 사진은 메인 저장소의 그 장 captures/를 쓴다.
 
 4. 도식 다시 만들기
    done 태그 지점에 patch를 모두 붙인 상태에서 projectcode-diagram을 부른다.

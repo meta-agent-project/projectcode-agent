@@ -38,17 +38,19 @@ description: 승인된 plan으로 tasks.md에 체크박스 작업 순서를 만�
 6. 다음
    projectcode-tdd라고 알린다.
 
-## 끝낼 때 (diagram 뒤)
+## 끝낼 때 (사진사가 돌아온 뒤)
 
 1. 확인
    tasks.md의 모든 줄이 체크됐는지 본다. 남은 줄이 있으면 멈추고 그 줄을 알린다.
+   사진사가 see와 다르다고 돌려준 사진이 있으면 멈추고 사용자에게 보인다.
 
 2. 코드 요약
    이 장의 커밋으로 summary-code.md를 쓴다. 아래 형식을 따른다.
    강사가 이 파일로 장의 학생 코드를 검수한다.
 
 3. 완료 처리
-   roadmap.md에서 이 장의 상태를 완료로 바꾼다.
+   roadmap.md에서 이 장의 상태를 마무리 중에서 완료로 바꾼다.
+   다음 장 문서를 쓰던 중이면 그 문서는 커밋에 넣지 않는다.
    captures/, diagrams/, summary-code.md와 함께 커밋한다.
    제목: [장] 완료
    본문: Chapter, Kind: docs

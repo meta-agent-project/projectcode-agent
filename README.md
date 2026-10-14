@@ -45,10 +45,11 @@
 | projectcode-tdd | 코드보다 먼저 행동 테스트를 쓴다 |
 | projectcode-implement | task 하나씩 구현, 검사, 커밋한다 |
 | projectcode-converge | 빠짐, 어긋남, 넘침, 순서 어긋남을 찾는다 |
-| projectcode-capture | 앱을 실행해 화면 PNG와 API JSON을 남긴다 |
+| projectcode-capture | 사진사(백그라운드)가 task 커밋마다 worktree에서 화면 PNG와 API JSON을 남긴다. 메인은 그동안 다음 장으로 간다 |
 | projectcode-diagram | 흐름, ERD, 폴더 구조도를 만든다 |
 | projectcode-fix | 완료된 장을 고치고 그 장 사진과 도식을 다시 만든다 |
 | projectcode-wiki | 프로젝트 전체를 보는 읽기 전용 문서를 만든다 |
+| projectcode-codealong | fix를 녹인 lecture 브랜치로 따라치기.md와 합류 지점 완성 md를 만든다 |
 
 공통 규칙은 .claude/projectcode-rules.md에 있다.
 

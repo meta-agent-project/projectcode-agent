@@ -33,15 +33,46 @@ async function takeScreen(browser, shot) {
   const page = await browser.newPage({ viewport: { width: 1280, height: 800 } })
   const logs = []
   page.on("console", (message) => logs.push(message.text()))
+  // 서버로 간 요청의 주소, 토큰, 보낸 값, 응답 상태를 남긴다
+  const requests = []
+  page.on("requestfinished", async (request) => {
+    if (!request.url().startsWith(spec.api)) return
+    const response = await request.response()
+    requests.push({
+      method: request.method(),
+      url: request.url(),
+      authorization: request.headers()["authorization"] || null,
+      body: request.postData() ? JSON.parse(request.postData()) : null,
+      status: response ? response.status() : null,
+    })
+  })
   await page.goto(spec.web + (shot.path || "/"))
   for (const step of shot.steps || []) {
-    if (step.fill) await page.getByLabel(step.fill[0]).fill(step.fill[1])
-    if (step.click) await page.getByRole("button", { name: step.click }).click()
+    if (step.fill) {
+      // label이 없는 칸은 placeholder로 찾는다
+      const byLabel = page.getByLabel(step.fill[0])
+      const field = (await byLabel.count()) > 0 ? byLabel : page.getByPlaceholder(step.fill[0])
+      await field.fill(step.fill[1])
+    }
+    if (step.click) {
+      await page.getByRole("button", { name: step.click }).click()
+      // 이미 조용했던 페이지는 networkidle이 바로 끝나므로 응답과 이동을 기다린다
+      await page.waitForTimeout(1000)
+    }
+    if (step.reload) await page.reload()
+    if (step.goto) await page.goto(spec.web + step.goto)
     await page.waitForLoadState("networkidle")
   }
   await page.screenshot({ path: join(outDir, shot.file), fullPage: true })
   if (shot.console) {
     writeFileSync(join(outDir, shot.file.replace(/\.png$/, ".console.txt")), logs.join("\n"))
+  }
+  if (shot.storage) {
+    const items = await page.evaluate(() => ({ ...localStorage }))
+    writeFileSync(join(outDir, shot.file.replace(/\.png$/, ".storage.json")), JSON.stringify(items, null, 2))
+  }
+  if (shot.requests) {
+    writeFileSync(join(outDir, shot.file.replace(/\.png$/, ".requests.json")), JSON.stringify(requests, null, 2))
   }
   await page.close()
 }
@@ -60,9 +91,9 @@ async function takeRequest(shot) {
 function writeList() {
   const rows = spec.shots.map((s) => {
     const see = s.missing ? `${s.see} (fix 뒤 다시 찍지 못함)` : s.see
-    return `| ${s.file} | ${spec.chapter} | ${s.task} | ${s.screen} | ${see} |`
+    return `| ${s.file} | ${spec.chapter} | ${s.task} | ${s.commit || ""} | ${s.screen} | ${see} |`
   })
-  const lines = ["# 캡처", "", "| 파일 | 장 | task | 찍은 화면 | 보이는 것 |", "|---|---|---|---|---|", ...rows, ""]
+  const lines = ["# 캡처", "", "| 파일 | 장 | task | 커밋 | 찍은 화면 | 보이는 것 |", "|---|---|---|---|---|---|", ...rows, ""]
   writeFileSync(join(outDir, "captures.md"), lines.join("\n"))
 }
 
