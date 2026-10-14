@@ -1,0 +1,8 @@
+{
+  "name": "projectcode-codealong",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "shiki": "^3.0.0"
+  }
+}

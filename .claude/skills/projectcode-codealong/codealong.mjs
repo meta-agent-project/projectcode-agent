@@ -152,7 +152,66 @@ function toMd(blocks) {
 }
 
 // ---------- HTML ----------
+// 코드 색은 만들 때 shiki로 미리 입힌다. HTML에 색칠 스크립트가 없어 폐쇄망에서도 그대로 보인다
+const THEME = "github-light"
+let shiki
+try {
+  shiki = await import("shiki")
+} catch {
+  console.error("shiki가 없습니다. .claude/skills/projectcode-codealong에서 npm install을 하세요.")
+  process.exit(1)
+}
+const highlighter = await shiki.createHighlighter({ themes: [THEME], langs: ["jsx", "js", "css", "json", "html"] })
+
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")
+
+// 줄 종류: add, rem, ctx, meta(@@ 줄과 \ No newline 줄). overwrite는 모두 ctx다
+function lineKinds(b) {
+  return b.lines.map((l) => {
+    if (b.kind === "overwrite") return "ctx"
+    if (l.startsWith("@@") || l.startsWith("\\")) return "meta"
+    return l[0] === "+" ? "add" : l[0] === "-" ? "rem" : "ctx"
+  })
+}
+
+// diff 기호를 떼고 코드를 한 번에 칠해야 여러 줄 문법이 맞게 칠해진다
+function highlighted(b) {
+  const kinds = lineKinds(b)
+  const code = b.lines.map((l, i) => (kinds[i] === "meta" ? "" : b.kind === "overwrite" ? l : l.slice(1))).join("\n")
+  const want = lang(b.rel)
+  const lg = highlighter.getLoadedLanguages().includes(want) ? want : "jsx"
+  const { tokens } = highlighter.codeToTokens(code, { lang: lg, theme: THEME })
+  return tokens
+    .map((line, i) => {
+      if (kinds[i] === "meta") return `<span class="ln meta"><span class="sign"></span>${esc(b.lines[i])}</span>`
+      const html = line.map((t) => `<span style="color:${t.color}">${esc(t.content)}</span>`).join("")
+      if (b.kind === "overwrite") return `<span class="ln plain">${html || " "}</span>`
+      const sign = kinds[i] === "add" ? "+" : kinds[i] === "rem" ? "-" : ""
+      return `<span class="ln ${kinds[i]}"><span class="sign">${sign}</span>${html || " "}</span>`
+    })
+    .join("")
+}
+
+// 복사 글자: - 줄을 빼고 + 줄과 그대로인 줄을 기호 없이. 고친 뒤의 완성된 코드다
+// diff 구간이 여럿이면 구간 사이에 빈 줄 하나. 덮어쓸 파일은 전체 코드다
+function copyText(b) {
+  if (b.kind === "overwrite") return `${b.full}\n`
+  const kinds = lineKinds(b)
+  const parts = []
+  let cur = []
+  b.lines.forEach((l, i) => {
+    if (l.startsWith("@@")) {
+      if (cur.length) parts.push(cur.join("\n"))
+      cur = []
+    } else if (kinds[i] === "add" || kinds[i] === "ctx") cur.push(l.slice(1))
+  })
+  if (cur.length) parts.push(cur.join("\n"))
+  return parts.join("\n\n")
+}
+
+const COPY_ICON = `<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/><path fill="currentColor" d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/></svg>`
+const CHECK_ICON = `<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 0 1 1.06-1.06L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"/></svg>`
+
 let copyId = 0
 function toHtml(title, blocks) {
   const toc = blocks.filter((b) => b.t === "h2").map((b) => `<a href="#${esc(b.id)}">${esc(b.text)}</a>`)
@@ -166,21 +225,12 @@ function toHtml(title, blocks) {
     else if (b.t === "delete")
       body.push(`<div class="file"><div class="head"><span class="tag del">삭제할 파일</span></div><ul class="dels">${b.items.map((x) => `<li><code>${esc(x)}</code></li>`).join("")}</ul></div>`)
     else if (b.t === "file") {
+      // 복사 아이콘 하나. 누르면 고친 뒤의 완성된 코드가 복사된다
       const a = ++copyId
-      const rows = b.lines
-        .map((l) => {
-          const cls = b.kind === "overwrite" ? "" : l.startsWith("@@") ? "hunk" : l[0] === "+" ? "add" : l[0] === "-" ? "rem" : ""
-          return `<span class="ln ${cls}">${esc(l) || " "}</span>`
-        })
-        .join("")
-      const buttons =
-        b.kind === "overwrite"
-          ? `<button data-copy="f${a}">코드 복사</button>`
-          : `<button data-copy="d${a}">diff 복사</button><button data-copy="f${a}">바뀐 뒤 전체 코드 복사</button>`
       body.push(
-        `<div class="file"><div class="head"><span class="tag ${b.kind}">${LABEL[b.kind]}</span><code class="path">${esc(b.rel)}</code><span class="btns">${buttons}</span></div>` +
-          `<pre><code>${rows}</code></pre>` +
-          `<textarea hidden id="d${a}">${esc(b.lines.join("\n"))}</textarea><textarea hidden id="f${a}">${esc(b.full)}\n</textarea></div>`,
+        `<div class="file"><div class="head"><span class="tag ${b.kind}">${LABEL[b.kind]}</span><code class="path">${esc(b.rel)}</code>` +
+          `<button class="copy" data-copy="c${a}" title="복사" aria-label="${esc(b.rel)} 복사">${COPY_ICON}</button></div>` +
+          `<pre><code>${highlighted(b)}</code></pre><textarea hidden id="c${a}">${esc(copyText(b))}</textarea></div>`,
       )
     }
   }
@@ -192,7 +242,6 @@ function toHtml(title, blocks) {
 <title>${esc(title)}</title>
 <style>
 :root{--bg:#ffffff;--fg:#1f2328;--muted:#59636e;--line:#d1d9e0;--code:#f6f8fa;--add:#dafbe1;--add-fg:#116329;--rem:#ffebe9;--rem-fg:#a40e26;--hunk:#ddf4ff;--accent:#0969da}
-@media (prefers-color-scheme: dark){:root{--bg:#0d1117;--fg:#e6edf3;--muted:#9198a1;--line:#3d444d;--code:#151b23;--add:#12261e;--add-fg:#6fdd8b;--rem:#25171c;--rem-fg:#ff9492;--hunk:#121d2f;--accent:#4493f8}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Malgun Gothic",sans-serif}
 main{max-width:980px;margin:0 auto;padding:24px 16px 80px}
@@ -204,13 +253,15 @@ h1{font-size:26px;margin:8px 0 4px}h2{font-size:22px;margin:40px 0 8px;padding-b
 .tag{font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;border:1px solid var(--line)}
 .tag.new{color:var(--add-fg)}.tag.modify{color:var(--accent)}.tag.overwrite{color:var(--muted)}.tag.del{color:var(--rem-fg)}
 .path{font-size:14px}
-.btns{margin-left:auto;display:flex;gap:6px}
-button{font:inherit;font-size:13px;padding:3px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);cursor:pointer}
-button.done{color:var(--add-fg);border-color:var(--add-fg)}
+button.copy{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:32px;height:28px;padding:0;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--muted);cursor:pointer}
+button.copy:hover{color:var(--fg);border-color:var(--muted)}
+button.copy.done{color:var(--add-fg);border-color:var(--add-fg)}
 pre{margin:0;overflow-x:auto;background:var(--bg)}
 pre code{display:block;min-width:max-content;font:13.5px/1.5 ui-monospace,Consolas,"D2Coding",monospace}
-.ln{display:block;padding:0 12px;white-space:pre}
-.ln.add{background:var(--add)}.ln.rem{background:var(--rem)}.ln.hunk{background:var(--hunk);color:var(--muted)}
+.ln{display:block;padding:0 12px 0 0;white-space:pre}
+.sign{display:inline-block;width:24px;text-align:center;color:var(--muted);user-select:none}
+.ln.add{background:var(--add)}.ln.add .sign{color:var(--add-fg)}.ln.rem{background:var(--rem)}.ln.rem .sign{color:var(--rem-fg)}.ln.meta{background:var(--hunk);color:var(--muted)}
+.ln.plain{padding-left:12px}
 .dels{margin:0;padding:8px 12px 8px 32px}
 </style>
 </head>
@@ -234,10 +285,10 @@ document.addEventListener("click", async (e) => {
     document.execCommand("copy")
     t.remove()
   }
-  const old = b.textContent
-  b.textContent = "복사했다"
+  const old = b.innerHTML
+  b.innerHTML = ${JSON.stringify(CHECK_ICON)}
   b.classList.add("done")
-  setTimeout(() => { b.textContent = old; b.classList.remove("done") }, 1200)
+  setTimeout(() => { b.innerHTML = old; b.classList.remove("done") }, 1200)
 })
 </script>
 </body>
