@@ -174,40 +174,38 @@ function lineKinds(b) {
   })
 }
 
+// 주석은 흐리게 칠한다. 학생은 읽기만 하고 치지 않는다
+const isComment = (t) => t.explanation?.some((e) => e.scopes.some((s) => s.scopeName.startsWith("comment")))
+
+// 주석만 있는 줄. JSX 주석을 감싸는 { }는 주석으로 본다
+function isNoteLine(line) {
+  if (!line.some(isComment)) return false
+  return /^[\s{}]*$/.test(line.filter((t) => !isComment(t)).map((t) => t.content).join(""))
+}
+
 // diff 기호를 떼고 코드를 한 번에 칠해야 여러 줄 문법이 맞게 칠해진다
 function highlighted(b) {
   const kinds = lineKinds(b)
   const code = b.lines.map((l, i) => (kinds[i] === "meta" ? "" : b.kind === "overwrite" ? l : l.slice(1))).join("\n")
   const want = lang(b.rel)
   const lg = highlighter.getLoadedLanguages().includes(want) ? want : "jsx"
-  const { tokens } = highlighter.codeToTokens(code, { lang: lg, theme: THEME })
+  const { tokens } = highlighter.codeToTokens(code, { lang: lg, theme: THEME, includeExplanation: true })
   return tokens
     .map((line, i) => {
       if (kinds[i] === "meta") return `<span class="ln meta"><span class="sign"></span>${esc(b.lines[i])}</span>`
-      const html = line.map((t) => `<span style="color:${t.color}">${esc(t.content)}</span>`).join("")
-      if (b.kind === "overwrite") return `<span class="ln plain">${html || " "}</span>`
+      const html = line
+        .map((t) => (isComment(t) ? `<span class="cm">${esc(t.content)}</span>` : `<span style="color:${t.color}">${esc(t.content)}</span>`))
+        .join("")
+      const note = isNoteLine(line) ? " note" : ""
+      if (b.kind === "overwrite") return `<span class="ln plain${note}">${html || " "}</span>`
       const sign = kinds[i] === "add" ? "+" : kinds[i] === "rem" ? "-" : ""
-      return `<span class="ln ${kinds[i]}"><span class="sign">${sign}</span>${html || " "}</span>`
+      return `<span class="ln ${kinds[i]}${note}"><span class="sign">${sign}</span>${html || " "}</span>`
     })
     .join("")
 }
 
-// 복사 글자: - 줄을 빼고 + 줄과 그대로인 줄을 기호 없이. 고친 뒤의 완성된 코드다
-// diff 구간이 여럿이면 구간 사이에 빈 줄 하나. 덮어쓸 파일은 전체 코드다
-function copyText(b) {
-  if (b.kind === "overwrite") return `${b.full}\n`
-  const kinds = lineKinds(b)
-  const parts = []
-  let cur = []
-  b.lines.forEach((l, i) => {
-    if (l.startsWith("@@")) {
-      if (cur.length) parts.push(cur.join("\n"))
-      cur = []
-    } else if (kinds[i] === "add" || kinds[i] === "ctx") cur.push(l.slice(1))
-  })
-  if (cur.length) parts.push(cur.join("\n"))
-  return parts.join("\n\n")
-}
+// 복사 글자: 그 단계가 끝난 뒤의 파일 전체다. 화면 diff에 안 보이는 줄도 들어간다
+const copyText = (b) => `${b.full}\n`
 
 const COPY_ICON = `<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/><path fill="currentColor" d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/></svg>`
 const CHECK_ICON = `<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 0 1 1.06-1.06L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"/></svg>`
@@ -225,11 +223,11 @@ function toHtml(title, blocks) {
     else if (b.t === "delete")
       body.push(`<div class="file"><div class="head"><span class="tag del">삭제할 파일</span></div><ul class="dels">${b.items.map((x) => `<li><code>${esc(x)}</code></li>`).join("")}</ul></div>`)
     else if (b.t === "file") {
-      // 복사 아이콘 하나. 누르면 고친 뒤의 완성된 코드가 복사된다
+      // 복사 아이콘 하나. 누르면 그 단계가 끝난 뒤의 파일 전체가 복사된다
       const a = ++copyId
       body.push(
         `<div class="file"><div class="head"><span class="tag ${b.kind}">${LABEL[b.kind]}</span><code class="path">${esc(b.rel)}</code>` +
-          `<button class="copy" data-copy="c${a}" title="복사" aria-label="${esc(b.rel)} 복사">${COPY_ICON}</button></div>` +
+          `<button class="copy" data-copy="c${a}" title="파일 전체 복사" aria-label="${esc(b.rel)} 파일 전체 복사">${COPY_ICON}</button></div>` +
           `<pre><code>${highlighted(b)}</code></pre><textarea hidden id="c${a}">${esc(copyText(b))}</textarea></div>`,
       )
     }
@@ -262,12 +260,16 @@ pre code{display:block;min-width:max-content;font:13.5px/1.5 ui-monospace,Consol
 .sign{display:inline-block;width:24px;text-align:center;color:var(--muted);user-select:none}
 .ln.add{background:var(--add)}.ln.add .sign{color:var(--add-fg)}.ln.rem{background:var(--rem)}.ln.rem .sign{color:var(--rem-fg)}.ln.meta{background:var(--hunk);color:var(--muted)}
 .ln.plain{padding-left:12px}
+.cm{color:#8c959f;font-style:italic}
+.ln.add.note{background:#f1fbf3}.ln.rem.note{background:#fff6f5}
+.hint{font-size:14px;color:var(--muted);margin:8px 0}
 .dels{margin:0;padding:8px 12px 8px 32px}
 </style>
 </head>
 <body>
 <main>
 ${toc.length ? `<nav>${toc.join("")}</nav>` : ""}
+<p class="hint">흐린 글씨는 주석이다. 읽기만 하고 치지 않는다. 복사 버튼은 주석까지 파일 전체를 복사한다.</p>
 ${body.join("\n")}
 </main>
 <script>
