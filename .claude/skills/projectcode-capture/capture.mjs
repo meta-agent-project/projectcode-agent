@@ -33,6 +33,8 @@ async function takeScreen(browser, shot) {
   const page = await browser.newPage({ viewport: { width: 1280, height: 800 } })
   const logs = []
   page.on("console", (message) => logs.push(message.text()))
+  // 받아 줄 곳이 없는 에러(Uncaught)는 console이 아니라 pageerror로 온다
+  page.on("pageerror", (error) => logs.push(`Uncaught: ${error.message}`))
   // 서버로 간 요청의 주소, 토큰, 보낸 값, 응답 상태를 남긴다
   const requests = []
   page.on("requestfinished", async (request) => {
@@ -62,6 +64,14 @@ async function takeScreen(browser, shot) {
     if (step.reload) await page.reload()
     if (step.goto) await page.goto(spec.web + step.goto)
     await page.waitForLoadState("networkidle")
+  }
+  // hold가 있으면 그 API 응답을 붙잡아 둔 채 화면으로 가서 받는 중인 모습을 찍는다
+  if (shot.hold) {
+    const api = spec.api + shot.hold.api
+    await page.route((url) => url.href === api, () => {})
+    await page.goto(spec.web + shot.hold.path)
+    // 애니메이션이 조금 돌아간 뒤 찍는다
+    await page.waitForTimeout(700)
   }
   await page.screenshot({ path: join(outDir, shot.file), fullPage: true })
   if (shot.console) {

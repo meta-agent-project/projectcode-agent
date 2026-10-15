@@ -111,8 +111,9 @@ projectcode-fix의 샌드박스가 이 순서를 쓴다. 다른 점은 둘이다
 | see | 보이는 것. 확인 기준이자 captures.md의 칸이다 |
 | path | 화면 주소. 없으면 / |
 | steps | 찍기 전에 할 일. fill은 [라벨 또는 placeholder, 값], click은 버튼 글자, reload는 true면 새로고침, goto는 옮겨 갈 화면 주소 |
-| console | true면 콘솔 기록을 .console.txt로 남긴다 |
+| console | true면 콘솔 기록과 Uncaught 에러를 .console.txt로 남긴다 |
 | storage | true면 찍을 때의 localStorage를 .storage.json으로 남긴다 |
 | requests | true면 서버로 간 요청의 주소, 토큰, 보낸 값, 응답 상태를 .requests.json으로 남긴다 |
+| hold | 받는 중인 화면을 찍는다. steps 뒤 api 응답을 붙잡은 채 path로 가서 찍는다. 예: { "path": "/", "api": "/?page=0" } |
 | request | 화면 대신 API를 부른다. method, path, body |
 | missing | fix 뒤 다시 찍지 못한 사진. 찍지 않고 captures.md에 그렇게 적는다 |
