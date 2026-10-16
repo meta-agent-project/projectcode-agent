@@ -69,16 +69,16 @@ const steps = hashes.map((h) => {
   return { h, chapter, task, subject: titles[`${chapter} ${task}`] || subject }
 })
 
-// 학생이 붙여 넣는 순서. 설정, components, pages, index.css, main.jsx, App.jsx
-// App.jsx는 모든 page를 불러오므로 마지막이어야 붙이는 도중에 에러가 나지 않는다
+// 학생이 붙여 넣는 순서. 설정, api와 store와 hooks 같은 모듈, components, pages, index.css, main.jsx, App.jsx
+// 불러다 쓰는 파일이 먼저 있어야 붙이는 도중에 에러가 나지 않는다. App.jsx는 모든 page를 불러오므로 마지막이다
 function rank(rel) {
   if (!rel.startsWith("src/")) return 1
-  if (rel.startsWith("src/components/")) return 2
-  if (rel.startsWith("src/pages/")) return 3
+  if (rel.startsWith("src/components/")) return 3
+  if (rel.startsWith("src/pages/")) return 4
   if (rel === "src/index.css") return 5
   if (rel === "src/main.jsx") return 6
   if (rel === "src/App.jsx") return 7
-  return 4
+  return 2
 }
 const byRank = (a, b) => rank(a.rel) - rank(b.rel) || a.rel.localeCompare(b.rel)
 
@@ -120,16 +120,39 @@ const chapterTitle = (chapter) => {
   return { t: "h2", text: `${ch.no} ${chapter} ${ch.name}`, id: chapter }
 }
 
+// review.md에서 단계마다 파일마다 코드 리뷰 줄을 읽는다. HTML 말풍선에 쓴다
+// ## join T1 아래 ### src/pages/JoinForm.jsx 아래 - 줄이다
+const reviews = {}
+if (existsSync(".projectcode/review.md")) {
+  let step = null
+  let file = null
+  for (const line of readFileSync(".projectcode/review.md", "utf8").split(/\r?\n/)) {
+    const s = line.match(/^## ([a-z0-9-]+ T\d+)\s*$/)
+    const f = line.match(/^### (.+?)\s*$/)
+    const r = line.match(/^- (.+)$/)
+    if (s) {
+      step = reviews[s[1]] = {}
+      file = null
+    } else if (f && step) file = step[f[1]] = []
+    else if (r && file) file.push(r[1].trim())
+  }
+}
+
 // 단계 하나: 제목, 삭제할 파일, 새 파일, 수정 파일
+// 코드 리뷰는 review.md에 그 파일 줄이 있는 블록에만 붙인다
 function stepBlocks(i, stepNo) {
   const step = steps[i]
   const no = (chapters[step.chapter] || { no: "" }).no
-  const blocks = [{ t: "h3", text: `${no}-${stepNo} ${step.subject}` }]
+  const blocks = [{ t: "h3", text: `${no}-${stepNo} ${step.subject}`, id: `s${no}-${stepNo}` }]
   const list = changes(null, step.h)
   const deleted = list.filter((c) => c.status === "D")
   if (deleted.length) blocks.push({ t: "delete", items: deleted.map((c) => c.rel) })
-  for (const c of list.filter((c) => c.status !== "D"))
-    blocks.push(fileBlock(c.status === "A" ? "new" : "modify", step.h, c))
+  const review = reviews[`${step.chapter} ${step.task}`] || {}
+  for (const c of list.filter((c) => c.status !== "D")) {
+    const b = fileBlock(c.status === "A" ? "new" : "modify", step.h, c)
+    if (review[c.rel]?.length) b.review = review[c.rel]
+    blocks.push(b)
+  }
   return blocks
 }
 
@@ -174,32 +197,20 @@ function lineKinds(b) {
   })
 }
 
-// 주석은 흐리게 칠한다. 학생은 읽기만 하고 치지 않는다
-const isComment = (t) => t.explanation?.some((e) => e.scopes.some((s) => s.scopeName.startsWith("comment")))
-
-// 주석만 있는 줄. JSX 주석을 감싸는 { }는 주석으로 본다
-function isNoteLine(line) {
-  if (!line.some(isComment)) return false
-  return /^[\s{}]*$/.test(line.filter((t) => !isComment(t)).map((t) => t.content).join(""))
-}
-
 // diff 기호를 떼고 코드를 한 번에 칠해야 여러 줄 문법이 맞게 칠해진다
 function highlighted(b) {
   const kinds = lineKinds(b)
   const code = b.lines.map((l, i) => (kinds[i] === "meta" ? "" : b.kind === "overwrite" ? l : l.slice(1))).join("\n")
   const want = lang(b.rel)
   const lg = highlighter.getLoadedLanguages().includes(want) ? want : "jsx"
-  const { tokens } = highlighter.codeToTokens(code, { lang: lg, theme: THEME, includeExplanation: true })
+  const { tokens } = highlighter.codeToTokens(code, { lang: lg, theme: THEME })
   return tokens
     .map((line, i) => {
       if (kinds[i] === "meta") return `<span class="ln meta"><span class="sign"></span>${esc(b.lines[i])}</span>`
-      const html = line
-        .map((t) => (isComment(t) ? `<span class="cm">${esc(t.content)}</span>` : `<span style="color:${t.color}">${esc(t.content)}</span>`))
-        .join("")
-      const note = isNoteLine(line) ? " note" : ""
-      if (b.kind === "overwrite") return `<span class="ln plain${note}">${html || " "}</span>`
+      const html = line.map((t) => `<span style="color:${t.color}">${esc(t.content)}</span>`).join("")
+      if (b.kind === "overwrite") return `<span class="ln plain">${html || " "}</span>`
       const sign = kinds[i] === "add" ? "+" : kinds[i] === "rem" ? "-" : ""
-      return `<span class="ln ${kinds[i]}${note}"><span class="sign">${sign}</span>${html || " "}</span>`
+      return `<span class="ln ${kinds[i]}"><span class="sign">${sign}</span>${html || " "}</span>`
     })
     .join("")
 }
@@ -210,24 +221,52 @@ const copyText = (b) => `${b.full}\n`
 const COPY_ICON = `<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/><path fill="currentColor" d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/></svg>`
 const CHECK_ICON = `<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.75.75 0 0 1 1.06-1.06L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"/></svg>`
 
+const HELP_ICON = `<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.92 6.085h.001a.749.749 0 1 1-1.342-.67c.169-.339.436-.701.849-.977C6.845 4.16 7.369 4 8 4a2.756 2.756 0 0 1 1.637.525c.503.377.863.965.863 1.725 0 .448-.115.83-.329 1.15-.205.307-.47.513-.692.662-.109.072-.22.138-.313.195l-.006.004a6.24 6.24 0 0 0-.26.16.952.952 0 0 0-.276.245.75.75 0 0 1-1.248-.832c.184-.264.42-.489.692-.661.103-.067.207-.132.313-.195l.007-.004c.1-.061.182-.11.258-.161a.969.969 0 0 0 .277-.245C8.96 6.514 9 6.427 9 6.25a.612.612 0 0 0-.262-.525A1.27 1.27 0 0 0 8 5.5c-.369 0-.595.09-.74.187a1.01 1.01 0 0 0-.34.398ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/></svg>`
+
+// 왼쪽 목차. 장 아래에 단계를 접어 둔다. 단계가 없는 절(준비, 통째로)은 링크 하나다
+function tocHtml(blocks) {
+  const items = []
+  for (const b of blocks) {
+    if (b.t === "h2") items.push({ ...b, steps: [] })
+    else if (b.t === "h3" && items.length) items[items.length - 1].steps.push(b)
+  }
+  return items
+    .map((h) =>
+      h.steps.length
+        ? `<details data-ch="${esc(h.id)}"><summary><a href="#${esc(h.id)}">${esc(h.text)}</a></summary>` +
+          h.steps.map((s) => `<a class="step" href="#${esc(s.id)}">${esc(s.text)}</a>`).join("") +
+          `</details>`
+        : `<a class="sec" href="#${esc(h.id)}">${esc(h.text)}</a>`,
+    )
+    .join("")
+}
+
 let copyId = 0
 function toHtml(title, blocks) {
-  const toc = blocks.filter((b) => b.t === "h2").map((b) => `<a href="#${esc(b.id)}">${esc(b.text)}</a>`)
+  const toc = tocHtml(blocks)
   const body = []
   for (const b of blocks) {
     if (b.t === "h1") body.push(`<h1>${esc(b.text)}</h1>`)
     else if (b.t === "h2") body.push(`<h2 id="${esc(b.id)}">${esc(b.text)}</h2>`)
-    else if (b.t === "h3") body.push(`<h3>${esc(b.text)}</h3>`)
+    else if (b.t === "h3") body.push(`<h3 id="${esc(b.id)}">${esc(b.text)}</h3>`)
     else if (b.t === "p") body.push(`<p>${esc(b.text)}</p>`)
     else if (b.t === "list") body.push(`<ul>${b.items.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`)
     else if (b.t === "delete")
       body.push(`<div class="file"><div class="head"><span class="tag del">삭제할 파일</span></div><ul class="dels">${b.items.map((x) => `<li><code>${esc(x)}</code></li>`).join("")}</ul></div>`)
     else if (b.t === "file") {
       // 복사 아이콘 하나. 누르면 그 단계가 끝난 뒤의 파일 전체가 복사된다
+      // 리뷰가 있는 파일은 복사 아이콘 왼쪽에 물음표 아이콘이 있다. 누르면 코드 위에 코드 리뷰가 열린다
       const a = ++copyId
+      const helpButton = b.review
+        ? `<button class="icon help-btn" data-help="h${a}" aria-expanded="false" title="코드 리뷰" aria-label="${esc(b.rel)} 코드 리뷰">${HELP_ICON}</button>`
+        : ""
+      const helpPanel = b.review
+        ? `<div class="help" id="h${a}"><div class="help-in"><ul>${b.review.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div></div>`
+        : ""
       body.push(
         `<div class="file"><div class="head"><span class="tag ${b.kind}">${LABEL[b.kind]}</span><code class="path">${esc(b.rel)}</code>` +
-          `<button class="copy" data-copy="c${a}" title="파일 전체 복사" aria-label="${esc(b.rel)} 파일 전체 복사">${COPY_ICON}</button></div>` +
+          `<span class="btns">${helpButton}<button class="icon copy" data-copy="c${a}" title="파일 전체 복사" aria-label="${esc(b.rel)} 파일 전체 복사">${COPY_ICON}</button></span></div>` +
+          helpPanel +
           `<pre><code>${highlighted(b)}</code></pre><textarea hidden id="c${a}">${esc(copyText(b))}</textarea></div>`,
       )
     }
@@ -239,40 +278,108 @@ function toHtml(title, blocks) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
 <style>
-:root{--bg:#ffffff;--fg:#1f2328;--muted:#59636e;--line:#d1d9e0;--code:#f6f8fa;--add:#dafbe1;--add-fg:#116329;--rem:#ffebe9;--rem-fg:#a40e26;--hunk:#ddf4ff;--accent:#0969da}
+:root{--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"D2Coding",monospace;--code-size:13.5px;--bg:#ffffff;--fg:#1f2328;--muted:#59636e;--line:#d1d9e0;--code:#f6f8fa;--add:#dafbe1;--add-fg:#116329;--rem:#ffebe9;--rem-fg:#a40e26;--hunk:#ddf4ff;--accent:#0969da;--ink:#191f28;--sub:#6b7684;--soft:#eef0f3;--side:#f9fafb;--font:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Malgun Gothic",sans-serif}
-main{max-width:980px;margin:0 auto;padding:24px 16px 80px}
-nav{display:flex;flex-wrap:wrap;gap:6px 14px;padding:12px 0;border-bottom:1px solid var(--line);margin-bottom:8px}
-nav a{color:var(--accent);text-decoration:none;font-size:14px}
-h1{font-size:26px;margin:8px 0 4px}h2{font-size:22px;margin:40px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line)}h3{font-size:18px;margin:28px 0 8px}
-.file{border:1px solid var(--line);border-radius:8px;margin:12px 0;overflow:hidden}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 var(--font);letter-spacing:-0.01em;-webkit-font-smoothing:antialiased}
+main{max-width:960px;min-width:0;margin:0 auto;padding:40px 20px 120px}
+code,pre{font-family:var(--mono);font-size:var(--code-size)}
+.toc{position:fixed;top:0;left:0;bottom:0;width:280px;overflow-y:auto;padding:24px 12px 48px;border-right:1px solid var(--soft);background:var(--side);font-size:14px;line-height:1.45}
+.toc a{display:block;color:var(--ink);text-decoration:none;font-weight:400;padding:6px 10px;border-radius:8px}
+.toc a:hover{background:var(--soft)}
+.toc summary{list-style:none;cursor:pointer;display:flex;align-items:center;border-radius:8px}
+.toc details,.toc a.sec{border-bottom:1px solid var(--soft);padding:4px 0}
+.toc details:last-child,.toc a.sec:last-child{border-bottom:none}
+.toc summary::-webkit-details-marker{display:none}
+.toc summary::before{content:"▸";width:16px;flex:none;text-align:center;color:var(--sub);font-size:11px}
+.toc details[open]>summary::before{content:"▾"}
+.toc summary a{flex:1}
+.toc a.sec{padding-left:26px}
+.toc a.step{padding-left:30px;color:var(--sub);font-size:13px}
+.toc a.active{background:#e8f1ff;color:var(--accent)}
+.toc-btn{display:none;position:fixed;top:12px;left:12px;z-index:3;padding:6px 14px;border:1px solid var(--soft);border-radius:999px;background:var(--bg);color:var(--ink);font:14px var(--font);cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.06);opacity:.55;transition:opacity .15s}
+.toc-btn:hover,.toc-btn:focus-visible{opacity:1}
+@media (min-width:1100px){main{margin-left:280px;margin-right:auto;padding-left:56px}}
+@media (max-width:1099px){.toc{z-index:2;padding-top:56px;transform:translateX(-100%);transition:transform .2s;box-shadow:0 0 16px rgba(0,0,0,.15)}.toc.open{transform:none}.toc-btn{display:block}main{padding-top:56px}}
+h1,h2,h3,.path,.dels code{overflow-wrap:anywhere}
+h1{font-size:30px;font-weight:700;letter-spacing:-0.02em;line-height:1.35;margin:8px 0 16px}
+h2{font-size:24px;font-weight:700;letter-spacing:-0.02em;margin:72px 0 16px;padding-top:40px;border-top:1px solid var(--line)}
+h3{font-size:18px;font-weight:600;margin:44px 0 12px;padding-top:28px;border-top:1px dashed var(--soft)}
+h2+h3,h2+ul+h3{border-top:none;padding-top:0;margin-top:24px}
+h1+h2{border-top:none;padding-top:0;margin-top:40px}
+main>ul{color:var(--ink);padding-left:22px}main>ul li{margin:4px 0}
+h2,h3{scroll-margin-top:24px}
+.file{border:1px solid var(--line);border-radius:12px;margin:16px 0;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.04)}
 .head{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 10px;background:var(--code);border-bottom:1px solid var(--line)}
-.tag{font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;border:1px solid var(--line)}
+.tag{font:500 12px var(--font);padding:2px 10px;border-radius:999px;border:1px solid var(--line);background:var(--bg)}
 .tag.new{color:var(--add-fg)}.tag.modify{color:var(--accent)}.tag.overwrite{color:var(--muted)}.tag.del{color:var(--rem-fg)}
-.path{font-size:14px}
-button.copy{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:32px;height:28px;padding:0;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--muted);cursor:pointer}
-button.copy:hover{color:var(--fg);border-color:var(--muted)}
+.path{min-width:0}
+.btns{margin-left:auto;display:flex;gap:6px}
+button.icon{display:inline-flex;align-items:center;justify-content:center;width:32px;height:28px;padding:0;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--muted);cursor:pointer}
+button.icon:hover{color:var(--fg);border-color:var(--muted)}
 button.copy.done{color:var(--add-fg);border-color:var(--add-fg)}
-pre{margin:0;overflow-x:auto;background:var(--bg)}
-pre code{display:block;min-width:max-content;font:13.5px/1.5 ui-monospace,Consolas,"D2Coding",monospace}
+button.help-btn[aria-expanded="true"]{color:var(--accent);border-color:var(--accent)}
+.help{display:grid;grid-template-rows:0fr;transition:grid-template-rows .25s ease}
+.help.open{grid-template-rows:1fr}
+.help-in{overflow:hidden}
+.help ul{margin:0;padding:12px 16px 12px 34px;background:#f6faff;border-bottom:1px solid var(--line);font:14px/1.65 var(--font)}
+.help li{margin:2px 0}
+pre{margin:0;overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--bg)}
+pre code{display:block;min-width:max-content;line-height:1.5}
 .ln{display:block;padding:0 12px 0 0;white-space:pre}
 .sign{display:inline-block;width:24px;text-align:center;color:var(--muted);user-select:none}
 .ln.add{background:var(--add)}.ln.add .sign{color:var(--add-fg)}.ln.rem{background:var(--rem)}.ln.rem .sign{color:var(--rem-fg)}.ln.meta{background:var(--hunk);color:var(--muted)}
 .ln.plain{padding-left:12px}
-.cm{color:#8c959f;font-style:italic}
-.ln.add.note{background:#f1fbf3}.ln.rem.note{background:#fff6f5}
-.hint{font-size:14px;color:var(--muted);margin:8px 0}
+.hint{font-size:14px;color:var(--sub);margin:0 0 24px;padding:12px 16px;background:var(--side);border-left:3px solid var(--accent);border-radius:8px}
 .dels{margin:0;padding:8px 12px 8px 32px}
+@media (max-width:640px){:root{--code-size:13px}.toc,.toc-btn{display:none}body{font-size:15px}main{padding:24px 16px 80px}h1{font-size:24px}h2{font-size:20px;margin-top:48px;padding-top:28px}h3{font-size:17px;margin-top:32px;padding-top:20px}h2+h3,h2+ul+h3{margin-top:20px}.head{padding:6px 8px}.help ul{padding:10px 12px 10px 28px}}
 </style>
 </head>
 <body>
+<button class="toc-btn" aria-label="목차 열기">목차</button>
+<aside class="toc">${toc}</aside>
 <main>
-${toc.length ? `<nav>${toc.join("")}</nav>` : ""}
-<p class="hint">흐린 글씨는 주석이다. 읽기만 하고 치지 않는다. 복사 버튼은 주석까지 파일 전체를 복사한다.</p>
+<p class="hint">물음표 버튼은 그 파일의 코드 리뷰를 연다. 복사 버튼은 파일 전체를 복사한다.</p>
 ${body.join("\n")}
 </main>
 <script>
+// 목차: 좁은 화면에서는 버튼으로 열고, 링크를 누르면 닫는다
+const toc = document.querySelector(".toc")
+document.querySelector(".toc-btn").addEventListener("click", () => toc.classList.toggle("open"))
+toc.addEventListener("click", (e) => { if (e.target.closest("a")) toc.classList.remove("open") })
+
+// 지금 보고 있는 장과 단계를 목차에서 강조하고, 그 장을 펼친다
+const links = new Map([...toc.querySelectorAll("a")].map((a) => [decodeURIComponent(a.hash.slice(1)), a]))
+const heads = [...document.querySelectorAll("main h2[id], main h3[id]")]
+let active = null
+function spy() {
+  let cur = heads[0]
+  for (const h of heads) if (h.getBoundingClientRect().top < 120) cur = h; else break
+  const a = cur && links.get(cur.id)
+  if (!a || a === active) return
+  if (active) active.classList.remove("active")
+  a.classList.add("active")
+  const d = a.closest("details")
+  if (d && !d.open) {
+    toc.querySelectorAll("details[open]").forEach((x) => { if (x !== d) x.open = false })
+    d.open = true
+  }
+  // 목차 안에서만 움직인다. 본문 스크롤은 건드리지 않는다
+  const r = a.getBoundingClientRect(), t = toc.getBoundingClientRect()
+  if (r.top < t.top || r.bottom > t.bottom) toc.scrollTop += r.top - t.top - t.height / 3
+  active = a
+}
+document.addEventListener("scroll", () => requestAnimationFrame(spy), { passive: true })
+spy()
+
+// 코드 리뷰: 코드 위에서 슬라이드로 열고 닫는다
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-help]")
+  if (!b) return
+  const open = document.getElementById(b.dataset.help).classList.toggle("open")
+  b.setAttribute("aria-expanded", String(open))
+})
+
 document.addEventListener("click", async (e) => {
   const b = e.target.closest("button[data-copy]")
   if (!b) return
