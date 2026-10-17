@@ -188,9 +188,10 @@ Source: 5926288 4c0da83
    node .claude/skills/projectcode-codealong/codealong.mjs --branch lecture --out .projectcode/code
 
 7. 점검
+   - 메인 저장소 루트에서 따라치기 점검을 돌린다. 오류가 0이어야 한다
+     node .claude/skills/projectcode-codealong/check-follow.mjs --build
+   - 이 점검은 따라치기 MD를 단계마다 그대로 적용하고 lecture 커밋과 비교한다. import, 내보내기, 빌드, HTML 복사 글자도 본다
    - 합류 지점 MD대로 시작 키트에 적용한 결과가 합류 장 끝 lecture 커밋과 같다
-   - 따라치기 MD대로 시작 지점에 적용한 결과가 마지막 lecture 커밋과 같다
-   - HTML 복사 글자가 그 lecture 커밋의 파일 전체와 같다
    - 따라치기에 fix 단계 제목이 남지 않았다
    - HTML을 브라우저로 열어 색, 복사 버튼, 목차, 코드 리뷰를 본다
    - 375px 폭에서 목차가 숨고, 페이지 가로 스크롤이 없고, 코드 글꼴과 크기가 하나인지 본다
