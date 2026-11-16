@@ -52,8 +52,10 @@ const steps = hashes.map((h) => {
   return { h, chapter, task, subject: titles[`${chapter} ${task}`] || subject }
 })
 
-// 학생이 붙여 넣는 순서. 설정, api와 store와 hooks 같은 모듈, components, pages, index.css, main.jsx, App.jsx
-// 불러다 쓰는 파일이 먼저 있어야 붙이는 도중에 에러가 나지 않는다. App.jsx는 모든 page를 불러오므로 마지막이다
+// 학생이 붙여 넣는 순서. 쓰이는 파일이 먼저, 쓰는 파일이 뒤다
+// 불러다 쓰는 파일이 먼저 있어야 붙이는 도중에 에러가 나지 않는다
+// 파일 이름(확장자 뺀 것)이 다른 파일 코드에 단어로 나오면 그 파일이 쓴다고 본다
+// 서로 쓰거나 판단이 안 되면 아래 rank, 그다음 경로 순서다
 function rank(rel) {
   if (!rel.startsWith("src/")) return 1
   if (rel.startsWith("src/components/")) return 3
@@ -64,6 +66,24 @@ function rank(rel) {
   return 2
 }
 const byRank = (a, b) => rank(a.rel) - rank(b.rel) || a.rel.localeCompare(b.rel)
+const escRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+function byUse(list, h) {
+  const name = (c) => c.rel.split("/").pop().replace(/\.[^.]+$/, "")
+  const text = new Map(list.map((c) => [c, c.status === "D" ? "" : textAt(h, c.path)]))
+  const uses = (a, b) =>
+    a !== b && name(b) !== "" && new RegExp(`(^|[^\\w$])${escRe(name(b))}([^\\w$]|$)`).test(text.get(a))
+  const left = [...list].sort(byRank)
+  const done = []
+  while (left.length) {
+    const i = left.findIndex((a) => !left.some((b) => uses(a, b) && !uses(b, a)))
+    done.push(...left.splice(i < 0 ? 0 : i, 1))
+  }
+  return done
+}
+function textAt(h, path) {
+  const buf = execFileSync("git", ["show", `${h}:${path}`], { maxBuffer: 1 << 28 })
+  return buf.includes(0) ? "" : buf.toString("utf8")
+}
 
 // 확장자와 shiki 언어. 새 언어 예제를 만들면 여기에 더한다
 const LANGS = {
@@ -125,7 +145,7 @@ const chapterTitle = (chapter) => {
 
 // review.md에서 단계마다 파일마다 코드 리뷰를 읽는다. HTML 말풍선에 쓴다
 // ## join T1 아래 ### src/pages/JoinForm.jsx 아래 - 줄이 코드 줄이다
-// #### 개념 상태 아래 - 줄은 개념 설명이다. #### 코드 뒤로는 다시 코드 줄이다
+// #### 개념 상태 아래 - 줄은 개념 설명이다. ##### 작은 제목으로 개념 안을 나눈다. #### 코드 뒤로는 다시 코드 줄이다
 const reviews = {}
 if (existsSync(".projectcode/review.md")) {
   let step = null
@@ -136,6 +156,7 @@ if (existsSync(".projectcode/review.md")) {
     const f = line.match(/^### (.+?)\s*$/)
     const c = line.match(/^#### 개념 (.+?)\s*$/)
     const k = line.match(/^#### 코드\s*$/)
+    const sub = line.match(/^##### (.+?)\s*$/)
     const r = line.match(/^- (.+)$/)
     if (s) {
       step = reviews[s[1]] = {}
@@ -147,7 +168,8 @@ if (existsSync(".projectcode/review.md")) {
       const concept = { name: c[1], lines: [] }
       file.concepts.push(concept)
       target = concept.lines
-    } else if (k && file) target = file.code
+    } else if (sub && file && file.concepts.length && target !== file.code) target.push({ sub: sub[1] })
+    else if (k && file) target = file.code
     else if (r && target) target.push(r[1].trim())
   }
 }
@@ -158,7 +180,7 @@ function stepBlocks(i, stepNo) {
   const step = steps[i]
   const no = (chapters[step.chapter] || { no: "" }).no
   const blocks = [{ t: "h3", text: `${no}-${stepNo} ${step.subject}`, id: `s${no}-${stepNo}` }]
-  const list = changes(null, step.h)
+  const list = byUse(changes(null, step.h), step.h)
   const deleted = list.filter((c) => c.status === "D")
   if (deleted.length) blocks.push({ t: "delete", items: deleted.map((c) => c.rel) })
   const review = reviews[`${step.chapter} ${step.task}`] || {}
@@ -280,7 +302,7 @@ function toHtml(title, blocks) {
         : ""
       const helpPanel = b.review
         ? `<div class="help" id="h${a}"><div class="help-in">` +
-          b.review.concepts.map((c) => `<div class="concept"><h4>${esc(c.name)}</h4>${c.lines.map((x) => `<p>${esc(x)}</p>`).join("")}</div>`).join("") +
+          b.review.concepts.map((c) => `<div class="concept"><h4>${esc(c.name)}</h4>${c.lines.map((x) => (typeof x === "object" ? `<h5>${esc(x.sub)}</h5>` : `<p>${esc(x)}</p>`)).join("")}</div>`).join("") +
           (b.review.code.length ? `<ul>${b.review.code.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : "") +
           `</div></div>`
         : ""
@@ -349,6 +371,7 @@ button.help-btn[aria-expanded="true"]{color:var(--accent);border-color:var(--acc
 .help .concept{padding:14px 16px 6px;background:#fffaf0;border-bottom:1px solid var(--line);font:14px/1.75 var(--font)}
 .help .concept h4{margin:0 0 6px;font-size:15px}
 .help .concept p{margin:0 0 8px}
+.help .concept h5{margin:12px 0 4px;font-size:14px}
 pre{margin:0;overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--bg)}
 pre code{display:block;min-width:max-content;line-height:1.5}
 .ln{display:block;padding:0 12px 0 0;white-space:pre}
