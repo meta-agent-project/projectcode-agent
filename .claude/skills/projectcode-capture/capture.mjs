@@ -1,8 +1,12 @@
 // projectcode 캡처 엔진
 // 사용: node capture.mjs <shots.json> [--task T2 | --from T2]
-// 앱은 미리 실행해 둔다. shots.json 옆에 사진과 JSON을 저장하고 captures.md를 다시 쓴다.
+// 찍을 코드의 저장소 루트(worktree)에서 실행한다.
+// 사진 종류는 셋이다. 화면(web), API(request), 명령 실행(run).
+// 화면과 API는 앱을 미리 띄워 둔다. run은 이 엔진이 명령을 직접 실행한다.
+// shots.json 옆에 사진, JSON, 콘솔 출력을 저장하고 captures.md를 다시 쓴다.
 
 import { readFileSync, writeFileSync } from "node:fs"
+import { execSync } from "node:child_process"
 import { dirname, join } from "node:path"
 import { createRequire } from "node:module"
 import { fileURLToPath } from "node:url"
@@ -98,6 +102,22 @@ async function takeRequest(shot) {
   writeFileSync(join(outDir, shot.file), JSON.stringify(result, null, 2))
 }
 
+// 명령을 실행하고 표준 입력을 넣은 뒤 화면에 나온 글자를 .txt로 남긴다
+function takeRun(shot) {
+  const command = shot.run.command || spec.command
+  const cwd = shot.run.cwd || spec.cwd || "."
+  let output
+  try {
+    output = execSync(command, { cwd, input: shot.run.input || "", encoding: "utf8", stdio: "pipe", timeout: 60000 })
+  } catch (error) {
+    output = `${error.stdout || ""}${error.stderr || ""}\n(끝난 코드 ${error.status})`
+  }
+  const lines = [`$ ${command}`]
+  if (shot.run.input) lines.push(`(입력)\n${shot.run.input.trimEnd()}`, "(출력)")
+  lines.push(output.trimEnd())
+  writeFileSync(join(outDir, shot.file), lines.join("\n") + "\n")
+}
+
 function writeList() {
   const rows = spec.shots.map((s) => {
     const see = s.missing ? `${s.see} (fix 뒤 다시 찍지 못함)` : s.see
@@ -107,12 +127,17 @@ function writeList() {
   writeFileSync(join(outDir, "captures.md"), lines.join("\n"))
 }
 
-const { chromium } = loadPlaywright()
-const browser = await chromium.launch()
-for (const shot of spec.shots.filter((s) => isSelected(s) && !s.missing)) {
-  if (shot.request) await takeRequest(shot)
-  else await takeScreen(browser, shot)
+// 화면 사진이 있을 때만 playwright를 불러온다. 화면이 없는 예제는 설치하지 않아도 된다
+const selected = spec.shots.filter((s) => isSelected(s) && !s.missing)
+let browser = null
+for (const shot of selected) {
+  if (shot.run) takeRun(shot)
+  else if (shot.request) await takeRequest(shot)
+  else {
+    if (!browser) browser = await loadPlaywright().chromium.launch()
+    await takeScreen(browser, shot)
+  }
   console.log("찍음:", shot.file)
 }
-await browser.close()
+if (browser) await browser.close()
 writeList()

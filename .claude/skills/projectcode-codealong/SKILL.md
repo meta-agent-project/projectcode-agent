@@ -26,7 +26,7 @@ description: 학생에게 줄 따라치기와 합류 지점마다 완성 문서(
 
 - MD와 HTML은 같은 내용이다. HTML은 브라우저로 연다
 - HTML은 파일 하나로 끝난다. 외부 CSS, 글꼴, 스크립트가 없다
-- HTML 코드 색은 GitHub Light 테마다. 만들 때 shiki로 미리 칠해 넣는다
+- HTML 코드 색은 GitHub Light 테마다. 만들 때 shiki로 미리 칠해 넣는다. 없는 언어는 codealong.mjs의 LANGS에 더한다
 - shiki가 없으면 이 스킬 폴더에서 npm install을 한 번 한다
 - 사진은 넣지 않는다
 - lecture 브랜치는 강사용이다. 학생에게 주지 않는다
@@ -38,7 +38,7 @@ description: 학생에게 줄 따라치기와 합류 지점마다 완성 문서(
 | 자리 | 모양 |
 |---|---|
 | 제목 | # 강의 이름 따라치기 (roadmap 강의 이름) |
-| 준비 | contract.md 실행의 서버, 프론트 줄과 브라우저 주소. 두 문서 모두 |
+| 준비 | contract.md 실행 절의 서버, 프론트, 실행 줄과 캡처 표의 web 주소. 두 문서 모두 |
 | 장 제목 | ## 4 component-split 겹치는 화면을 컴포넌트로 |
 | 단계 제목 | ### 4-1 글 카드를 컴포넌트로 빼고 props로 넘기기 |
 | 왜, 실행하면 | 넣지 않는다 |
@@ -190,7 +190,9 @@ Source: 5926288 4c0da83
 7. 점검
    - 메인 저장소 루트에서 따라치기 점검을 돌린다. 오류가 0이어야 한다
      node .claude/skills/projectcode-codealong/check-follow.mjs --build
-   - 이 점검은 따라치기 MD를 단계마다 그대로 적용하고 lecture 커밋과 비교한다. import, 내보내기, 빌드, HTML 복사 글자도 본다
+   - 이 점검은 따라치기 MD를 단계마다 그대로 적용하고 lecture 커밋과 비교한다. contract.md 빌드 줄과 HTML 복사 글자도 본다
+   - JS 학생 코드면 import와 내보내기도 본다. 다른 언어는 빌드 줄이 이 일을 대신한다
+   - contract.md에 빌드 줄이 없으면 --build를 빼고 돌린다
    - 합류 지점 MD대로 시작 키트에 적용한 결과가 합류 장 끝 lecture 커밋과 같다
    - 따라치기에 fix 단계 제목이 남지 않았다
    - HTML을 브라우저로 열어 색, 복사 버튼, 목차, 코드 리뷰를 본다

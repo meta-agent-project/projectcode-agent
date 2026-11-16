@@ -1,5 +1,6 @@
 // projectcode 따라치기 엔진
-// 사용: node codealong.mjs [--branch lecture] [--out .projectcode/code] [--student react-blog]
+// 사용: node codealong.mjs [--branch lecture] [--out .projectcode/code] [--student 폴더]
+// 학생 코드 폴더는 --student가 없으면 contract.md 폴더 표의 학생 코드 줄이다.
 // lecture 브랜치의 커밋을 차례로 읽어 따라치기와 합류 지점마다 완성 문서를 쓴다.
 // 문서마다 MD와 HTML 두 가지를 같은 내용으로 쓴다. HTML은 브라우저로 열고 복사 버튼을 쓴다.
 // 커밋 하나가 따라치기 한 단계다. 첫 커밋은 시작 키트를 복사한 상태라 따라치기에 넣지 않는다.
@@ -7,6 +8,7 @@
 import { execFileSync } from "node:child_process"
 import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync } from "node:fs"
 import { join } from "node:path"
+import { contract, studentFolder } from "./contract.mjs"
 
 const arg = (name, fallback) => {
   const i = process.argv.indexOf(name)
@@ -14,7 +16,7 @@ const arg = (name, fallback) => {
 }
 const branch = arg("--branch", "lecture")
 const out = arg("--out", ".projectcode/code")
-const student = arg("--student", "react-blog")
+const student = studentFolder(arg("--student"))
 
 const git = (args) =>
   execFileSync("git", ["-c", "core.quotepath=false", ...args], { encoding: "utf8", maxBuffer: 1 << 28 })
@@ -49,15 +51,10 @@ for (const line of section("따라치기 제목").split("\n")) {
   if (m) titles[`${m[1]} ${m[2]}`] = m[3].trim()
 }
 
-// contract.md 실행에서 서버와 프론트 줄을 준비 절로 쓴다
+// contract.md 실행 절의 서버, 프론트, 실행 줄과 캡처 표의 web 주소를 준비 절로 쓴다
 const prep = []
-if (existsSync(".projectcode/contract.md")) {
-  const contract = readFileSync(".projectcode/contract.md", "utf8")
-  const run = (contract.split(/^## 실행\s*$/m)[1] || "").split(/^## /m)[0]
-  for (const line of run.split("\n")) if (/^- (서버|프론트)/.test(line)) prep.push(line.slice(2))
-  const port = run.match(/npm run dev \((\d+)\)/)
-  if (port) prep.push(`브라우저: http://localhost:${port[1]}`)
-}
+for (const key of ["서버", "프론트", "실행"]) if (contract.run[key]) prep.push(`${key}: ${contract.run[key]}`)
+if (contract.web) prep.push(`브라우저: ${contract.web}`)
 
 const trailer = (msg, key) => (msg.match(new RegExp(`^${key}: (.+)$`, "m")) || [])[1]
 const hashes = git(["rev-list", "--reverse", branch]).trim().split("\n")
@@ -82,9 +79,15 @@ function rank(rel) {
 }
 const byRank = (a, b) => rank(a.rel) - rank(b.rel) || a.rel.localeCompare(b.rel)
 
+// 확장자와 shiki 언어. 새 언어 예제를 만들면 여기에 더한다
+const LANGS = {
+  jsx: "jsx", js: "js", mjs: "js", ts: "ts", tsx: "tsx", css: "css", json: "json", html: "html", md: "md",
+  java: "java", kt: "kotlin", py: "python", sql: "sql", properties: "properties", xml: "xml",
+  yml: "yaml", yaml: "yaml", sh: "bash", cmd: "bat", bat: "bat", dart: "dart", swift: "swift",
+}
 function lang(rel) {
   const ext = rel.split(".").pop()
-  return { jsx: "jsx", js: "js", css: "css", json: "json", html: "html", md: "md" }[ext] || ""
+  return LANGS[ext] || ""
 }
 
 function changes(from, to) {
@@ -184,7 +187,7 @@ try {
   console.error("shiki가 없습니다. .claude/skills/projectcode-codealong에서 npm install을 하세요.")
   process.exit(1)
 }
-const highlighter = await shiki.createHighlighter({ themes: [THEME], langs: ["jsx", "js", "css", "json", "html"] })
+const highlighter = await shiki.createHighlighter({ themes: [THEME], langs: [...new Set(Object.values(LANGS))] })
 
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")
 
@@ -202,7 +205,7 @@ function highlighted(b) {
   const kinds = lineKinds(b)
   const code = b.lines.map((l, i) => (kinds[i] === "meta" ? "" : b.kind === "overwrite" ? l : l.slice(1))).join("\n")
   const want = lang(b.rel)
-  const lg = highlighter.getLoadedLanguages().includes(want) ? want : "jsx"
+  const lg = highlighter.getLoadedLanguages().includes(want) ? want : "text"
   const { tokens } = highlighter.codeToTokens(code, { lang: lg, theme: THEME })
   return tokens
     .map((line, i) => {
@@ -462,7 +465,7 @@ for (const [chapter, { name: fileName, whole }] of Object.entries(joins)) {
   const doc = [
     { t: "h1", text: fileName },
     { t: "p", text: `${ch.no} ${chapter} ${ch.name}까지 끝낸 코드다.` },
-    { t: "p", text: "시작 키트를 react-blog 폴더로 복사한 뒤 아래 순서대로 한다." },
+    { t: "p", text: `시작 키트를 ${student} 폴더로 복사한 뒤 아래 순서대로 한다.` },
     ...prepBlocks(),
     { t: "h2", text: `${wholeCh.no}장까지 통째로`, id: "whole" },
     { t: "p", text: `${wholeCh.no} ${whole}까지 끝낸 파일이다.` },

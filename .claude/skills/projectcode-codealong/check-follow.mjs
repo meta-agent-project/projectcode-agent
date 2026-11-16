@@ -1,20 +1,22 @@
 // projectcode 따라치기 점검
-// 사용: node check-follow.mjs [--branch lecture] [--out .projectcode/code] [--student react-blog] [--build]
-// 저장소 루트에서 실행한다. 학생 코드 폴더에 npm install이 되어 있어야 한다.
+// 사용: node check-follow.mjs [--branch lecture] [--out .projectcode/code] [--student 폴더] [--build]
+// 저장소 루트에서 실행한다. 학생 코드 폴더는 --student가 없으면 contract.md 폴더 표의 학생 코드 줄이다.
 // 따라치기.md를 시작 키트(lecture 첫 커밋)에 한 단계씩 그대로 적용하고 단계마다 본다.
 // - 적용한 결과가 그 단계의 lecture 커밋과 같은가
+// - --build를 주면 단계마다 contract.md 실행 절의 빌드 줄이 되는가
+// JS 학생 코드(학생 폴더에 @babel/parser가 설치됨)면 더 본다.
 // - 상대 경로 import가 있는 파일을 가리키는가. 대소문자까지 본다. Windows는 몰라도 Mac은 오류다
 // - default와 이름 붙은 내보내기가 import와 맞는가
 // - 쓰는 이름이 모두 import되거나 선언됐는가
 // - 패키지 import가 그 단계의 package.json에 있는가
-// - --build를 주면 단계마다 vite build가 되는가
 // 끝에 HTML 복사 글자가 그 lecture 커밋의 파일 전체와 같은지 본다.
 
-import { execFileSync } from "node:child_process"
+import { execFileSync, execSync } from "node:child_process"
 import fs from "node:fs"
 import os from "node:os"
 import path from "node:path"
 import { createRequire } from "node:module"
+import { contract, studentFolder } from "./contract.mjs"
 
 const arg = (name, fallback) => {
   const i = process.argv.indexOf(name)
@@ -22,12 +24,18 @@ const arg = (name, fallback) => {
 }
 const branch = arg("--branch", "lecture")
 const out = arg("--out", ".projectcode/code")
-const student = arg("--student", "react-blog")
+const student = studentFolder(arg("--student"))
 const build = process.argv.includes("--build")
+const buildCommand = contract.run["빌드"]
 
-const require = createRequire(path.resolve(student, "package.json"))
-const parser = require("@babel/parser")
-const traverse = require("@babel/traverse").default
+// JS 점검 도구는 학생 폴더에 설치된 것을 쓴다. 없으면 JS 점검을 건너뛴다
+let parser = null
+let traverse = null
+try {
+  const require = createRequire(path.resolve(student, "package.json"))
+  parser = require("@babel/parser")
+  traverse = require("@babel/traverse").default
+} catch {}
 
 const git = (args, input) =>
   execFileSync("git", ["-c", "core.quotepath=false", ...args], { input, maxBuffer: 1 << 30 })
@@ -167,6 +175,7 @@ function exportsOf(code) {
 function checkImports(state) {
   const errs = []
   const notes = []
+  if (!parser) return { errs, notes }
   const pkg = JSON.parse(state.get("package.json") ?? "{}")
   const deps = new Set([...Object.keys(pkg.dependencies ?? {}), ...Object.keys(pkg.devDependencies ?? {})])
   for (const [file, code] of state) {
@@ -224,7 +233,14 @@ function checkImports(state) {
   return { errs, notes }
 }
 
-// 단계마다 학생 폴더를 임시 폴더에 쓰고 node_modules를 이어 붙여 빌드한다
+// 단계마다 학생 폴더를 임시 폴더에 쓰고, contract.md 연결 줄의 폴더를 이어 붙여 빌드 줄을 실행한다
+if (build && !buildCommand) {
+  console.error("contract.md 실행 절에 빌드 줄이 없습니다. --build를 빼거나 빌드 줄을 적으세요.")
+  process.exit(1)
+}
+const links = contract.links
+  .filter((l) => l.startsWith(student + "/"))
+  .map((l) => l.slice(student.length + 1))
 const tmp = build ? fs.mkdtempSync(path.join(os.tmpdir(), "check-follow-")) : null
 function buildStep(state, n) {
   const dir = path.join(tmp, String(n))
@@ -232,15 +248,20 @@ function buildStep(state, n) {
     fs.mkdirSync(path.dirname(path.join(dir, f)), { recursive: true })
     fs.writeFileSync(path.join(dir, f), c)
   }
-  const link = path.join(dir, "node_modules")
-  fs.symlinkSync(path.resolve(student, "node_modules"), link, "junction")
+  const made = []
+  for (const l of links) {
+    const target = path.join(dir, l)
+    fs.mkdirSync(path.dirname(target), { recursive: true })
+    fs.symlinkSync(path.resolve(student, l), target, "junction")
+    made.push(target)
+  }
   try {
-    execFileSync(process.execPath, ["node_modules/vite/bin/vite.js", "build", "--outDir", path.join(tmp, `dist-${n}`), "--logLevel", "error"], { cwd: dir, stdio: "pipe" })
+    execSync(buildCommand, { cwd: dir, stdio: "pipe" })
     return null
   } catch (e) {
     return (e.stdout + "\n" + e.stderr).trim().split("\n").slice(0, 8).join("\n    ")
   } finally {
-    fs.unlinkSync(link)
+    for (const target of made) fs.unlinkSync(target)
   }
 }
 
@@ -304,7 +325,7 @@ for (let i = 0; i < Math.min(areas.length, copies.length); i++) {
   copyDiff++
 }
 
-report.push(`단계 ${steps.length}개, 오류 ${errCount}개${build ? ", 빌드 포함" : ""}`)
+report.push(`단계 ${steps.length}개, 오류 ${errCount}개${build ? ", 빌드 포함" : ""}${parser ? "" : ", JS 점검 없음"}`)
 report.push(`복사 ${copies.length}개 중 다름 ${copyDiff}개`)
 console.log(report.join("\n"))
 process.exit(errCount + copyDiff ? 1 : 0)

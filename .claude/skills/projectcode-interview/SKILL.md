@@ -21,9 +21,10 @@ description: 강의 예제의 목적을 질문으로 정해 roadmap.md(강의 �
    - 학생은 무엇을 알고 오나 (선수 지식)
    - 다 배우면 무엇을 만들 수 있나 (결과물)
    - 일부러 다루지 않을 것은 무엇인가
-   - 예제 형태: 프론트만, 백엔드만, 둘 다
+   - 예제 형태: 프론트만, 백엔드만, 둘 다, 콘솔, 앱
    - 기술: 언어, 프레임워크, 저장소, 패키지 관리자, 테스트 도구
-   - 화면과 API 결과를 어떻게 남길까 (캡처 방법)
+   - 실행, 빌드, 테스트 명령과 학생 코드 폴더
+   - 결과를 어떻게 남길까 (캡처 종류: web, api, run)
    기술 후보의 최신 버전과 무료 여부는 technical-researcher 에이전트로 먼저 확인한다.
 
 3. 장 나누기
@@ -92,12 +93,58 @@ description: 강의 예제의 목적을 질문으로 정해 roadmap.md(강의 �
 | 화면 테스트 | Playwright |
 | API 테스트 | supertest |
 
+## 폴더
+| 무엇 | 폴더 |
+|---|---|
+| 학생 코드 | react-blog |
+| 서버 | server-node |
+
 ## 실행
 - 설치: pnpm install
-- 실행: pnpm dev
+- 서버: cd server-node, npm start (8080)
+- 프론트: cd react-blog, npm run dev (5173)
 - 테스트: pnpm test
+- 빌드: npm run build
+- 연결: react-blog/node_modules, server-node/node_modules
+- 초기화: server-node/db.json 지우기
 
 ## 캡처
-- 화면: Playwright가 브라우저에서 화면을 띄워 PNG로 저장한다
-- API: 테스트가 요청과 응답을 JSON으로 저장한다
+| 종류 | 주소나 명령 |
+|---|---|
+| web | http://localhost:5173 |
+| api | http://localhost:8080 |
+
+## 디자인
+- DaisyUI
+```
+
+폴더 표와 실행 절의 줄 이름은 스킬과 엔진이 읽는다. 이름을 바꾸지 않는다.
+
+| 줄 | 쓰는 곳 |
+|---|---|
+| 학생 코드 | task, codealong. 학생에게 주는 코드 폴더 |
+| 서버, 프론트, 실행 | 사진사가 앱을 띄울 때, 따라치기 준비 절. 괄호 안은 포트 |
+| 테스트 | tdd, implement |
+| 빌드 | 따라치기 점검. 학생 코드 폴더에서 실행한다 |
+| 연결 | git에 없어서 worktree와 임시 폴더에 이어 붙일 폴더. 없으면 쓰지 않는다 |
+| 초기화 | 사진마다 앱을 띄우기 전. 없으면 쓰지 않는다 |
+| 캡처 표 | 쓰는 사진 종류. run은 실행할 명령이다 |
+
+화면 없는 예제는 쓰지 않는 줄을 뺀다.
+
+```
+## 폴더
+| 무엇 | 폴더 |
+|---|---|
+| 학생 코드 | app |
+
+## 실행
+- 실행: cd app, run.cmd
+- 테스트: cd app, test.cmd
+- 빌드: build.cmd
+
+## 캡처
+| 종류 | 주소나 명령 |
+|---|---|
+| run | run.cmd |
 ```

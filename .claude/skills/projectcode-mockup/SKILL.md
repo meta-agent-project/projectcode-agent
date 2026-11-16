@@ -18,7 +18,7 @@ contract.md의 디자인 절에서 정한다.
 | UI 라이브러리를 정했다. 예: DaisyUI | 그 라이브러리의 클래스 |
 | 정하지 않았다 | 이 스킬 폴더의 base.css |
 
-- 시안은 앱이 쓰는 CSS를 그대로 불러온다. 예: 앱 node_modules의 daisyui.css
+- 시안은 앱이 쓰는 CSS를 그대로 불러온다. 예: 학생 코드 폴더 node_modules의 daisyui.css
 - Tailwind처럼 빌드가 필요한 도구는 같은 버전의 브라우저용 CDN을 함께 불러온다
 - base.css를 쓰는 프로젝트는 project-setup 장에서 base.css를 앱에 복사해 넣는다
 - 수업에서는 미리 준비된 스타일로 소개하고 설명하지 않는다
@@ -75,6 +75,8 @@ base.css의 값은 아래 목록에서만 고른다.
    projectcode-plan이라고 알린다.
 
 ## 시안 예시 (DaisyUI)
+
+react-blog는 contract.md 폴더 표의 학생 코드 폴더다.
 
 ```
 <!doctype html>

@@ -58,10 +58,25 @@ description: 장의 코드를 쓰기 전에 spec 할 일마다 행동 테스트�
 
 ## 예시
 
+테스트 도구마다 모양만 다르다. 이름을 S번호로 시작하는 것은 같다.
+
+Playwright
+
 ```
 test("S2 아이디와 비밀번호를 입력하면 화면이 값을 기억한다", async ({ page }) => {
   await page.goto("/")
   await page.getByLabel("아이디").fill("kim")
   await expect(page.getByLabel("아이디")).toHaveValue("kim")
 })
+```
+
+JUnit 5
+
+```
+@Test
+@DisplayName("S2 잔액보다 많이 보내면 송금을 거절한다")
+void s2() {
+    Account account = new Account(1L, 1000);
+    assertThrows(IllegalStateException.class, () -> account.withdraw(2000));
+}
 ```
