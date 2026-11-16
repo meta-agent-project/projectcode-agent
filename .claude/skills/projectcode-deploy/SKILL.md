@@ -1,24 +1,47 @@
 ---
 name: projectcode-deploy
-description: projectcode-codealong이 만든 따라치기 HTML을 GitHub Pages로 배포한다. 저장소에 Pages 작업 파일을 넣고 Pages를 켠 뒤 푸시해서 주소로 바로 열리게 한다. 한 번 켜 두면 따라치기를 다시 뽑아 푸시할 때마다 사이트도 바뀐다. "따라치기 배포", "github.io에 올려줘", "Pages 배포", "projectcode-deploy" 요청에 사용.
+description: projectcode-codealong이 만든 따라치기와 projectcode-wiki가 만든 wiki를 GitHub Pages로 배포한다. wiki md 7개는 처음 보는 사람도 위에서 아래로 읽히는 문서 한 장으로 묶는다. 저장소에 Pages 작업 파일을 넣고 Pages를 켠 뒤 푸시한다. 한 번 켜 두면 푸시할 때마다 사이트도 바뀐다. "따라치기 배포", "wiki 배포", "github.io에 올려줘", "Pages 배포", "projectcode-deploy" 요청에 사용.
 ---
 
 # projectcode-deploy
 
-따라치기 HTML은 GitHub에서 열면 코드로 보인다.
-학생이 주소로 바로 열 수 있게 GitHub Pages로 내보낸다.
+따라치기 HTML과 wiki md는 GitHub에서 열면 코드로 보인다.
+학생과 처음 보는 사람이 주소로 바로 열 수 있게 GitHub Pages로 내보낸다.
 
 ## 사이트
 
-| 주소 | 내용 |
-|---|---|
-| https://<계정>.github.io/<저장소>/ | 따라치기.html과 같은 첫 화면 |
-| .../따라치기.html | 따라치기 |
-| .../파일/... | 따라치기의 복사할 파일 |
+| 주소 | 내용 | 만드는 곳 |
+|---|---|---|
+| https://<계정>.github.io/<저장소>/ | 첫 화면. 따라치기와 wiki로 가는 카드 | site.mjs |
+| .../따라치기.html | 따라치기 | .projectcode/code 그대로 |
+| .../wiki.html | wiki 한 장 | wiki.mjs |
+| .../파일/... | 따라치기의 복사할 파일 | .projectcode/code 그대로 |
+| .../files/... | wiki가 보여 주는 장 사진 | wiki.mjs |
 
-- .projectcode/code 폴더를 그대로 내보낸다
-- Pages는 점으로 시작하는 폴더를 내보내지 않는다. 그래서 GitHub Actions가 사이트 폴더로 복사해 올린다
-- 폐쇄망 강의실에서는 열리지 않는다. 그때는 결과 폴더를 그대로 나눠 준다
+- 작업 파일이 GitHub Actions에서 site.mjs를 돌려 사이트 폴더를 만든다. Pages는 점으로 시작하는 폴더를 내보내지 않아서다
+- 폐쇄망 강의실에서는 열리지 않는다. 그때는 따라치기 결과 폴더를 그대로 나눠 준다
+
+## wiki 한 장
+
+wiki.mjs가 roadmap.md, wiki/*.md, 장 captures를 읽어 쓴다.
+처음 보는 사람이 위에서 아래로 읽으면 강의가 잡히는 순서다.
+
+| 차례 | 내용 | 원본 |
+|---|---|---|
+| 머리 | 강의 이름, 목표, 대상, 결과물, 숫자(장, task, 사진, 테스트) | roadmap, overview, check |
+| 시작하기 전에 | 선수 지식, 학습 목표, 진행 방식 | roadmap |
+| 장 지도 | 장마다 종류, 문제, 배울 것. 누르면 장 끝 실행 결과 | roadmap 장 표, overview, 장 captures.md의 done |
+| 개념 | 배울 것마다 처음 나온 장 | concepts |
+| 요청 흐름 | 시나리오 탭과 흐름 그림, 만든 장 | scenarios |
+| 실행 화면 | 화면마다 지금 모습, 장을 고르면 그 장 모습 | screens |
+| 코드와 데이터 | 폴더 구조, ERD | tree, erd |
+| 점검과 범위 | 점검 결과, 고칠 것, 미룬 것, 하지 않는 것 | check, roadmap |
+
+- 모양은 검정 펜이다. 흰 바탕, 검정 선, 오프셋 그림자
+- 콘솔 사진은 터미널 모양으로 보여 준다. $ 명령 줄은 빼고, 친 값을 프롬프트 자리에 키 모양으로 끼워 넣는다
+- 그림은 가로 스크롤 없이 그린다. 넓으면 줄이고, 너무 작아지면 세로로 다시 그린다
+- wiki가 없으면 wiki.html과 그 카드를 만들지 않는다
+- 바꾼 뒤에는 node .claude/skills/projectcode-deploy/site.mjs <임시 폴더>로 만들어 브라우저로 본다. 1280px과 375px에서 가로 스크롤이 없는지, 그림이 그려졌는지 본다
 
 ## 준비
 
@@ -55,14 +78,14 @@ description: projectcode-codealong이 만든 따라치기 HTML을 GitHub Pages�
    실패하면 gh run view <번호> --log-failed로 이유를 보여 준다.
 
 5. 확인
-   첫 화면, 따라치기.html, 파일/ 아래 파일 하나를 curl로 열어 200인지 본다.
+   첫 화면, 따라치기.html, wiki.html, 파일/ 아래 파일 하나를 curl로 열어 200인지 본다.
    한글 파일 이름은 주소에서 퍼센트 인코딩한다.
 
 6. 알리기
    사이트 주소를 알린다.
-   다음부터는 따라치기를 다시 뽑아 푸시하면 사이트도 바뀐다고 알린다.
+   다음부터는 따라치기나 wiki를 다시 만들어 푸시하면 사이트도 바뀐다고 알린다.
 
 ## 언제
 
-- 사용자가 따라치기를 웹으로 보자고 할 때
+- 사용자가 따라치기나 wiki를 웹으로 보자고 할 때
 - 처음 한 번만 한다. 그 뒤는 푸시가 배포다
