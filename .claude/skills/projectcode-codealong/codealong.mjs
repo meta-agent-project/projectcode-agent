@@ -123,21 +123,32 @@ const chapterTitle = (chapter) => {
   return { t: "h2", text: `${ch.no} ${chapter} ${ch.name}`, id: chapter }
 }
 
-// review.md에서 단계마다 파일마다 코드 리뷰 줄을 읽는다. HTML 말풍선에 쓴다
-// ## join T1 아래 ### src/pages/JoinForm.jsx 아래 - 줄이다
+// review.md에서 단계마다 파일마다 코드 리뷰를 읽는다. HTML 말풍선에 쓴다
+// ## join T1 아래 ### src/pages/JoinForm.jsx 아래 - 줄이 코드 줄이다
+// #### 개념 상태 아래 - 줄은 개념 설명이다. #### 코드 뒤로는 다시 코드 줄이다
 const reviews = {}
 if (existsSync(".projectcode/review.md")) {
   let step = null
   let file = null
+  let target = null
   for (const line of readFileSync(".projectcode/review.md", "utf8").split(/\r?\n/)) {
     const s = line.match(/^## ([a-z0-9-]+ T\d+)\s*$/)
     const f = line.match(/^### (.+?)\s*$/)
+    const c = line.match(/^#### 개념 (.+?)\s*$/)
+    const k = line.match(/^#### 코드\s*$/)
     const r = line.match(/^- (.+)$/)
     if (s) {
       step = reviews[s[1]] = {}
-      file = null
-    } else if (f && step) file = step[f[1]] = []
-    else if (r && file) file.push(r[1].trim())
+      file = target = null
+    } else if (f && step) {
+      file = step[f[1]] = { concepts: [], code: [] }
+      target = file.code
+    } else if (c && file) {
+      const concept = { name: c[1], lines: [] }
+      file.concepts.push(concept)
+      target = concept.lines
+    } else if (k && file) target = file.code
+    else if (r && target) target.push(r[1].trim())
   }
 }
 
@@ -153,7 +164,8 @@ function stepBlocks(i, stepNo) {
   const review = reviews[`${step.chapter} ${step.task}`] || {}
   for (const c of list.filter((c) => c.status !== "D")) {
     const b = fileBlock(c.status === "A" ? "new" : "modify", step.h, c)
-    if (review[c.rel]?.length) b.review = review[c.rel]
+    const r = review[c.rel]
+    if (r && (r.code.length || r.concepts.length)) b.review = r
     blocks.push(b)
   }
   return blocks
@@ -264,7 +276,10 @@ function toHtml(title, blocks) {
         ? `<button class="icon help-btn" data-help="h${a}" aria-expanded="false" title="코드 리뷰" aria-label="${esc(b.rel)} 코드 리뷰">${HELP_ICON}</button>`
         : ""
       const helpPanel = b.review
-        ? `<div class="help" id="h${a}"><div class="help-in"><ul>${b.review.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div></div>`
+        ? `<div class="help" id="h${a}"><div class="help-in">` +
+          b.review.concepts.map((c) => `<div class="concept"><h4>${esc(c.name)}</h4>${c.lines.map((x) => `<p>${esc(x)}</p>`).join("")}</div>`).join("") +
+          (b.review.code.length ? `<ul>${b.review.code.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : "") +
+          `</div></div>`
         : ""
       body.push(
         `<div class="file"><div class="head"><span class="tag ${b.kind}">${LABEL[b.kind]}</span><code class="path">${esc(b.rel)}</code>` +
@@ -327,6 +342,9 @@ button.help-btn[aria-expanded="true"]{color:var(--accent);border-color:var(--acc
 .help-in{overflow:hidden}
 .help ul{margin:0;padding:12px 16px 12px 34px;background:#f6faff;border-bottom:1px solid var(--line);font:14px/1.65 var(--font)}
 .help li{margin:2px 0}
+.help .concept{padding:14px 16px 6px;background:#fffaf0;border-bottom:1px solid var(--line);font:14px/1.75 var(--font)}
+.help .concept h4{margin:0 0 6px;font-size:15px}
+.help .concept p{margin:0 0 8px}
 pre{margin:0;overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--bg)}
 pre code{display:block;min-width:max-content;line-height:1.5}
 .ln{display:block;padding:0 12px 0 0;white-space:pre}
