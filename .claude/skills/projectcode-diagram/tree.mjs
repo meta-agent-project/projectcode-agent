@@ -5,7 +5,7 @@
 import { execSync } from "node:child_process"
 
 const base = process.argv[2]
-const git = (args) => execSync(`git ${args}`, { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim()
+const git = (args) => execSync(`git -c core.quotepath=false ${args}`, { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim()
 
 const hidden = [".projectcode/", ".claude/", "tests/", "CLAUDE.md", ".gitignore"]
 const isStudentFile = (file) => file && !hidden.some((h) => file === h || file.startsWith(h))

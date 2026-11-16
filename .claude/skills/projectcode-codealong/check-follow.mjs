@@ -68,6 +68,7 @@ const blobs = new Map()
   }
 }
 const tree = (i) => new Map(listings[i].map((x) => [x.file, blobs.get(x.blob)]))
+const rawOf = (i, file) => git(["cat-file", "blob", listings[i].find((x) => x.file === file).blob])
 
 // 따라치기.md를 단계와 파일 블록으로 나눈다
 const lines = fs.readFileSync(path.join(out, "따라치기.md"), "utf8").replace(/\r\n/g, "\n").split("\n")
@@ -87,6 +88,8 @@ for (let i = 0; i < lines.length; i++) {
     }
     i--
     step.ops.push(op)
+  } else if ((m = l.match(/^#### 복사할 파일 (.+)$/))) {
+    step.ops.push({ kind: "copy", file: m[1] })
   } else if ((m = l.match(/^#### (새 파일|수정 파일|덮어쓸 파일) (.+)$/))) {
     const kind = { "새 파일": "new", "수정 파일": "mod", "덮어쓸 파일": "over" }[m[1]]
     while (!lines[i].startsWith("```")) i++
@@ -242,6 +245,8 @@ const links = contract.links
   .filter((l) => l.startsWith(student + "/"))
   .map((l) => l.slice(student.length + 1))
 const tmp = build ? fs.mkdtempSync(path.join(os.tmpdir(), "check-follow-")) : null
+// 빌드 줄이 가리키는 파일(예 src/hexa/Main.java)이 아직 없는 단계는 빌드할 코드가 없어 건너뛴다
+const buildFiles = (buildCommand || "").split(/[\s,]+/).filter((w) => /^[\w.-]+(\/[\w.-]+)+\.\w+$/.test(w))
 function buildStep(state, n) {
   const dir = path.join(tmp, String(n))
   for (const [f, c] of state) {
@@ -281,6 +286,15 @@ for (let s = 0; s < Math.min(steps.length, commits.length - 1); s++) {
       for (const f of op.files) if (!state.delete(f)) errs.push(`지울 파일이 없음 ${f}`)
       continue
     }
+    // 복사할 파일은 결과 폴더의 파일 폴더에 있는 것을 그대로 복사한다
+    if (op.kind === "copy") {
+      const from = path.join(out, "파일", op.file)
+      if (!fs.existsSync(from)) errs.push(`복사할 파일이 결과 폴더에 없음 ${op.file}`)
+      else if (!tree(s + 1).has(op.file) || !fs.readFileSync(from).equals(rawOf(s + 1, op.file)))
+        errs.push(`복사할 파일이 lecture와 다름 ${op.file}`)
+      state.set(op.file, tree(s + 1).get(op.file))
+      continue
+    }
     if (op.kind === "new") {
       if (state.has(op.file)) errs.push(`새 파일인데 이미 있음 ${op.file}`)
       state.set(op.file, op.body.map((l) => l.slice(1)).join("\n") + "\n")
@@ -298,7 +312,9 @@ for (let s = 0; s < Math.min(steps.length, commits.length - 1); s++) {
   for (const f of state.keys()) if (!want.has(f)) errs.push(`lecture에 없는 파일 ${f}`)
   const ic = checkImports(state)
   errs.push(...ic.errs)
-  if (build) {
+  const missing = buildFiles.filter((f) => !state.has(f))
+  if (build && missing.length) ic.notes.push(`빌드 건너뜀 ${missing.join(", ")}가 아직 없음`)
+  else if (build) {
     const fail = buildStep(state, s + 1)
     if (fail) errs.push(`빌드 실패\n    ${fail}`)
   }

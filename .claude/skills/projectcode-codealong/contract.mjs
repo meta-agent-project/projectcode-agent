@@ -16,7 +16,7 @@ function tableRow(title, key) {
 
 // - 빌드: npm run build 같은 줄을 { 빌드: "npm run build" }로 읽는다
 const run = {}
-for (const line of section("실행").split("\n")) {
+for (const line of section("실행").split(/\r?\n/)) {
   const m = line.match(/^- ([^:]+): (.+)$/)
   if (m) run[m[1].trim()] = m[2].trim()
 }

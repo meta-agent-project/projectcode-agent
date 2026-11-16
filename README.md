@@ -53,7 +53,8 @@
 | projectcode-diagram | 흐름, ERD, 폴더 구조도를 만든다 |
 | projectcode-fix | 완료된 장을 고치고 그 장 사진과 도식을 다시 만든다 |
 | projectcode-wiki | 프로젝트 전체를 보는 읽기 전용 문서를 만든다 |
-| projectcode-codealong | fix를 녹인 lecture 브랜치로 따라치기와 합류 지점 완성 문서를 MD와 HTML로 만든다 |
+| projectcode-codealong | fix를 녹인 lecture 브랜치로 따라치기를 MD와 HTML로 만든다 |
+| projectcode-deploy | 따라치기 HTML을 GitHub Pages로 배포한다. 한 번 켜면 푸시가 배포다 |
 
 공통 규칙은 .claude/projectcode-rules.md에 있다.
 
