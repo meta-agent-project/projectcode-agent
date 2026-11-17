@@ -5,7 +5,8 @@
 |---|---|
 | 프론트 | React 19.3, Vite 8 |
 | 패키지 관리자 | npm |
-| 동작 테스트 | Vitest 5, Testing Library 16 |
+| 동작 테스트 | Vitest 5, Testing Library 16, jsdom |
+| 포맷 | Prettier |
 | 화면 테스트 | Playwright 1.65 |
 
 ## 폴더

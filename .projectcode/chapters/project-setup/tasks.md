@@ -1,0 +1,26 @@
+# project-setup 작업
+
+- [ ] 테스트 작성
+- [ ] T1 Vite로 첫 화면 띄우기
+  - 근거: S1
+  - 파일: todo-app/package.json, todo-app/index.html, todo-app/vite.config.js, todo-app/src/main.jsx, todo-app/src/App.jsx
+  - 실행하면: npm run dev로 연 브라우저에 할 일 제목과 아직 할 일이 없어요가 꾸밈 없이 보인다
+  - Why: 화면이 뜨는 가장 작은 React 앱부터 있어야 그 위에 모습과 도구를 더할 수 있다
+- [ ] T2 공통 CSS로 카드 모양 만들기
+  - 근거: S2
+  - 파일: todo-app/src/index.css, todo-app/src/main.jsx, todo-app/src/App.jsx
+  - 실행하면: 첫 화면이 가운데 테두리 카드 안에 들어가 보인다
+  - Why: 뒤 장의 모든 화면이 같은 공통 스타일 위에서 만들어진다
+- [ ] T3 테스트 실행기 붙이기
+  - 근거: S3
+  - 파일: todo-app/package.json, todo-app/vite.config.js
+  - 실행하면: npm test에서 첫 화면 제목 테스트가 통과한다
+  - Why: 장마다 쓴 행동 테스트를 명령 하나로 돌려 확인한다
+- [ ] T4 포맷 도구 붙이기
+  - 근거: S4
+  - 파일: todo-app/package.json, todo-app/.prettierrc
+  - 실행하면: npm run format을 하면 src 코드 모양이 한 가지로 맞춰진다
+  - Why: 학생과 강사의 코드 모양이 같아야 따라치기 diff가 깔끔하다
+- [ ] 수렴 점검
+- [ ] 캡처
+- [ ] 도식
