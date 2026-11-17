@@ -1,7 +1,7 @@
 # project-setup 작업
 
 - [x] 테스트 작성
-- [ ] T1 Vite로 첫 화면 띄우기
+- [x] T1 Vite로 첫 화면 띄우기
   - 근거: S1
   - 파일: todo-app/package.json, todo-app/index.html, todo-app/vite.config.js, todo-app/src/main.jsx, todo-app/src/App.jsx
   - 실행하면: npm run dev로 연 브라우저에 할 일 제목과 아직 할 일이 없어요가 꾸밈 없이 보인다
