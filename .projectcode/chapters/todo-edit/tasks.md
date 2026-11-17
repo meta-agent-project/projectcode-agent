@@ -13,7 +13,7 @@
   - 실행하면: 우유 사기를 두유 사기로 고치고 저장을 누르면 목록에 두유 사기가 보인다
   - Why: 할 일 목록은 App의 state라서 자식은 받은 함수로 바꿔 달라고 부탁한다
   - 다른 장: project-setup, todo-list, todo-add, todo-toggle, todo-delete, todo-components
-- [ ] T3 빈 칸은 저장하지 않기
+- [x] T3 빈 칸은 저장하지 않기
   - 근거: S3
   - 파일: todo-app/src/TodoItem.jsx
   - 실행하면: 칸을 비우고 저장을 눌러도 고치는 칸이 그대로 남고 글이 바뀌지 않는다

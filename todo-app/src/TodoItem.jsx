@@ -6,6 +6,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onEdit }) {
 
   function handleSave(e) {
     e.preventDefault()
+    if (draft.trim() === "") return
     onEdit(todo.id, draft)
     setEditing(false)
   }
