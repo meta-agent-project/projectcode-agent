@@ -14,5 +14,5 @@
   - Why: 지금 어떤 목록을 보고 있는지 버튼 모양으로 알려준다
   - 다른 장: project-setup, todo-list, todo-add, todo-toggle, todo-delete, todo-components, todo-edit
 - [x] 수렴 점검
-- [ ] 캡처
-- [ ] 도식
+- [x] 캡처
+- [x] 도식
