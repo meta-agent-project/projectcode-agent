@@ -12,6 +12,7 @@ export default function App() {
 
   function handleSubmit(e) {
     e.preventDefault()
+    if (text.trim() === "") return
     setTodos([...todos, { id: Date.now(), text: text, done: false }])
     setText("")
   }
