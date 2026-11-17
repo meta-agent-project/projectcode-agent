@@ -43,7 +43,7 @@ export default function App() {
       </form>
       <ul className="stack todo-list">
         {todos.map((todo) => (
-          <li key={todo.id}>
+          <li key={todo.id} className="row">
             <label className="row">
               <input
                 type="checkbox"
@@ -52,7 +52,12 @@ export default function App() {
               />
               <span className={todo.done ? "done" : ""}>{todo.text}</span>
             </label>
-            <button onClick={() => handleDelete(todo.id)}>삭제</button>
+            <button
+              className="button button-text"
+              onClick={() => handleDelete(todo.id)}
+            >
+              삭제
+            </button>
           </li>
         ))}
       </ul>

@@ -148,3 +148,7 @@ body {
   color: var(--color-secondary);
   text-decoration: line-through;
 }
+
+.todo-list label {
+  flex: 1;
+}
