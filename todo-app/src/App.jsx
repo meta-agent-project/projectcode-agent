@@ -25,6 +25,10 @@ export default function App() {
     )
   }
 
+  function handleDelete(id) {
+    setTodos(todos.filter((todo) => todo.id !== id))
+  }
+
   return (
     <main className="card stack todo">
       <h1 className="title">할 일</h1>
@@ -48,6 +52,7 @@ export default function App() {
               />
               <span className={todo.done ? "done" : ""}>{todo.text}</span>
             </label>
+            <button onClick={() => handleDelete(todo.id)}>삭제</button>
           </li>
         ))}
       </ul>
