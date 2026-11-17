@@ -39,7 +39,7 @@ for (const line of section("따라치기 제목").split("\n")) {
 
 // contract.md 실행 절의 서버, 프론트, 실행 줄과 캡처 표의 web 주소를 준비 절로 쓴다
 const prep = []
-for (const key of ["서버", "프론트", "실행"]) if (contract.run[key]) prep.push(`${key}: ${contract.run[key]}`)
+for (const key of ["설치", "서버", "프론트", "실행"]) if (contract.run[key]) prep.push(`${key}: ${contract.run[key]}`)
 if (contract.web) prep.push(`브라우저: ${contract.web}`)
 
 const trailer = (msg, key) => (msg.match(new RegExp(`^${key}: (.+)$`, "m")) || [])[1]
