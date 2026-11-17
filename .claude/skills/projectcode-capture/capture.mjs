@@ -57,9 +57,15 @@ async function takeScreen(browser, shot) {
     // in이 있으면 그 글자가 든 목록 줄 안에서만 찾는다. 같은 버튼이 줄마다 있을 때 쓴다
     const scope = step.in ? page.getByRole("listitem").filter({ hasText: step.in }) : page
     if (step.fill) {
-      // label이 없는 칸은 placeholder로 찾는다
+      // label이 없는 칸은 placeholder로 찾는다. 둘 다 없으면 목록 줄 안의 글 칸(줄에서 고치는 칸)을 쓴다
       const byLabel = scope.getByLabel(step.fill[0])
-      const field = (await byLabel.count()) > 0 ? byLabel : scope.getByPlaceholder(step.fill[0])
+      const byPlaceholder = scope.getByPlaceholder(step.fill[0])
+      const field =
+        (await byLabel.count()) > 0
+          ? byLabel
+          : (await byPlaceholder.count()) > 0
+            ? byPlaceholder
+            : page.getByRole("listitem").getByRole("textbox")
       await field.first().fill(step.fill[1])
     }
     if (step.click) {
