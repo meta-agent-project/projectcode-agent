@@ -1,0 +1,88 @@
+:root {
+  --color-primary: #111111;
+  --color-secondary: #888888;
+  --color-line: #e5e5e5;
+  --color-bg: #ffffff;
+
+  --font-body: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  --font-mono: "JetBrains Mono", "Consolas", monospace;
+
+  --text-small: 13px;
+  --text-body: 15px;
+  --text-title: 22px;
+
+  --space-s: 8px;
+  --space-m: 16px;
+  --space-l: 32px;
+
+  --height-control: 40px;
+  --radius-control: 999px;
+  --radius-card: 14px;
+
+  --width-page: 960px;
+  --width-form: 420px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-primary);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-m) var(--space-l);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.header nav { display: flex; gap: var(--space-m); color: var(--color-secondary); font-size: var(--text-small); }
+
+.page { max-width: var(--width-page); margin: 0 auto; padding: var(--space-l); }
+
+.title { font-size: var(--text-title); font-weight: 700; margin: 0; }
+
+.stack { display: flex; flex-direction: column; gap: var(--space-m); }
+.row { display: flex; align-items: center; gap: var(--space-m); }
+
+.card {
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius-card);
+  padding: var(--space-l);
+}
+
+.field { display: flex; flex-direction: column; gap: var(--space-s); }
+.label { font-size: var(--text-small); color: var(--color-secondary); }
+
+.input {
+  height: var(--height-control);
+  padding: 0 var(--space-m);
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius-control);
+  font: inherit;
+  background: var(--color-bg);
+}
+
+.button {
+  height: var(--height-control);
+  padding: 0 var(--space-m);
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius-control);
+  background: var(--color-bg);
+  color: var(--color-primary);
+  font: inherit;
+  cursor: pointer;
+}
+
+.button-primary { background: var(--color-primary); color: var(--color-bg); }
+.button-text { border-color: transparent; color: var(--color-secondary); padding: 0 var(--space-s); }
+
+.muted { color: var(--color-secondary); font-size: var(--text-small); }
+.mono { font-family: var(--font-mono); font-size: var(--text-small); color: var(--color-secondary); }
+
+.todo { max-width: var(--width-form); margin: var(--space-l) auto; }

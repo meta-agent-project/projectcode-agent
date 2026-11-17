@@ -6,7 +6,7 @@
   - 파일: todo-app/package.json, todo-app/index.html, todo-app/vite.config.js, todo-app/src/main.jsx, todo-app/src/App.jsx
   - 실행하면: npm run dev로 연 브라우저에 할 일 제목과 아직 할 일이 없어요가 꾸밈 없이 보인다
   - Why: 화면이 뜨는 가장 작은 React 앱부터 있어야 그 위에 모습과 도구를 더할 수 있다
-- [ ] T2 공통 CSS로 카드 모양 만들기
+- [x] T2 공통 CSS로 카드 모양 만들기
   - 근거: S2
   - 파일: todo-app/src/index.css, todo-app/src/main.jsx, todo-app/src/App.jsx
   - 실행하면: 첫 화면이 가운데 테두리 카드 안에 들어가 보인다
