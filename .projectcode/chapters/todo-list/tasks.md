@@ -1,6 +1,6 @@
 # todo-list 작업
 
-- [ ] 테스트 작성
+- [x] 테스트 작성
 - [ ] T1 할 일 배열을 map으로 그리기
   - 근거: S1
   - 파일: todo-app/src/App.jsx
