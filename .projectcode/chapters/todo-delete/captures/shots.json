@@ -1,0 +1,14 @@
+{
+  "chapter": "todo-delete",
+  "web": "http://localhost:5173",
+  "shots": [
+    { "file": "T1-filter로-지우기.png", "task": "T1", "commit": "5cfbdc9", "screen": "첫 화면",
+      "see": "우유 사기 줄의 삭제를 누르면 우유 사기만 사라지고 React 공부하기와 운동하기 두 개가 남는다",
+      "steps": [ { "click": "삭제", "in": "우유 사기" } ] },
+    { "file": "T2-줄-끝-삭제.png", "task": "T2", "commit": "07bc9c2", "screen": "첫 화면",
+      "see": "세 할 일 줄마다 오른쪽 끝에 삭제가 흐린 글자로 보인다" },
+    { "file": "done-첫-화면.png", "task": "done", "commit": "07bc9c2", "screen": "첫 화면",
+      "see": "우유 사기를 삭제해 React 공부하기와 운동하기 두 줄이 남고 줄마다 오른쪽 끝에 흐린 삭제가 보인다",
+      "steps": [ { "click": "삭제", "in": "우유 사기" } ] }
+  ]
+}

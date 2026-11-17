@@ -14,5 +14,5 @@
   - Why: 버튼이 글자에 붙어 있으면 잘못 누르기 쉽다
   - 다른 장: project-setup, todo-list, todo-add, todo-toggle
 - [x] 수렴 점검
-- [ ] 캡처
-- [ ] 도식
+- [x] 캡처
+- [x] 도식
