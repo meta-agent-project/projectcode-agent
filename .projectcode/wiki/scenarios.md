@@ -36,13 +36,14 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-  A[체크 칸] --> B[handleToggle]
+  A[TodoItem 체크 칸] --> B[handleToggle]
   B --> C[todos state]
   C --> D[done 줄 긋기]
 ```
 
-만든 장: todo-toggle
+만든 장: todo-toggle, todo-components
 맡는 파일
+- todo-app/src/TodoItem.jsx
 - todo-app/src/App.jsx
 - todo-app/src/index.css
 
@@ -50,12 +51,13 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-  A[삭제 버튼] --> B[handleDelete]
+  A[TodoItem 삭제 버튼] --> B[handleDelete]
   B --> C[todos state]
   C --> D[할 일 목록]
 ```
 
-만든 장: todo-delete
+만든 장: todo-delete, todo-components
 맡는 파일
+- todo-app/src/TodoItem.jsx
 - todo-app/src/App.jsx
 - todo-app/src/index.css

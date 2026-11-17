@@ -10,8 +10,8 @@
 | 3 | todo-add 할 일 추가 | 기능 | useState, 입력값 state로 기억하기, form 제출 이벤트 | 완료 | 3 | 4 |
 | 4 | todo-toggle 완료 체크 | 기능 | map으로 새 배열 만들어 state 바꾸기, 조건에 따른 class | 완료 | 2 | 3 |
 | 5 | todo-delete 할 일 삭제 | 기능 | filter로 새 배열 만들어 지우기 | 완료 | 2 | 3 |
-| 6 | todo-components 컴포넌트 나누기 | 리팩터 | props, 함수 props, state는 부모에 두기 | 진행 중 | 1 | 0 |
-| 7 | todo-edit 할 일 수정 | 기능 | 조건부 렌더링, 자식 컴포넌트 안의 state | 대기 | 0 | 0 |
+| 6 | todo-components 컴포넌트 나누기 | 리팩터 | props, 함수 props, state는 부모에 두기 | 완료 | 1 | 2 |
+| 7 | todo-edit 할 일 수정 | 기능 | 조건부 렌더링, 자식 컴포넌트 안의 state | 진행 중 | 3 | 0 |
 | 8 | todo-filter 골라 보기 | 기능 | state에서 계산한 값, 선택된 버튼 표시 | 대기 | 0 | 0 |
 
 ## 미룬 것
