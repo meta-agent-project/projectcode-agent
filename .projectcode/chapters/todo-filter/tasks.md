@@ -1,6 +1,6 @@
 # todo-filter 작업
 
-- [ ] 테스트 작성
+- [x] 테스트 작성
 - [ ] T1 고른 조건으로 목록 거르기
   - 근거: S1
   - 파일: todo-app/src/App.jsx
