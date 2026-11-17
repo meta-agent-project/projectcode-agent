@@ -1,0 +1,24 @@
+# todo-edit 작업
+
+- [ ] 테스트 작성
+- [ ] T1 수정을 누르면 고치는 칸으로 바꿔 그리기
+  - 근거: S1
+  - 파일: todo-app/src/TodoItem.jsx
+  - 실행하면: 우유 사기의 수정을 누르면 그 줄만 우유 사기가 든 칸과 취소로 바뀌고, 취소를 누르면 돌아온다
+  - Why: 줄마다 고치는 중인지는 그 줄만 아는 값이라 TodoItem 안의 state로 둔다
+  - 다른 장: todo-components
+- [ ] T2 저장하면 부모의 할 일 글 바꾸기
+  - 근거: S2
+  - 파일: todo-app/src/TodoItem.jsx, todo-app/src/App.jsx
+  - 실행하면: 우유 사기를 두유 사기로 고치고 저장을 누르면 목록에 두유 사기가 보인다
+  - Why: 할 일 목록은 App의 state라서 자식은 받은 함수로 바꿔 달라고 부탁한다
+  - 다른 장: project-setup, todo-list, todo-add, todo-toggle, todo-delete, todo-components
+- [ ] T3 빈 칸은 저장하지 않기
+  - 근거: S3
+  - 파일: todo-app/src/TodoItem.jsx
+  - 실행하면: 칸을 비우고 저장을 눌러도 고치는 칸이 그대로 남고 글이 바뀌지 않는다
+  - Why: 추가할 때처럼 빈 할 일이 생기지 않게 막는다
+  - 다른 장: todo-components
+- [ ] 수렴 점검
+- [ ] 캡처
+- [ ] 도식
