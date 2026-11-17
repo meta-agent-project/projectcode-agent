@@ -78,3 +78,16 @@ flowchart LR
 - todo-app/src/TodoItem.jsx
 - todo-app/src/App.jsx
 - todo-app/src/index.css
+
+## 골라 보기
+
+```mermaid
+flowchart LR
+  A[전체 남은 일 끝난 일 버튼] --> B[filter state]
+  B --> C[visibleTodos 계산]
+  C --> D[할 일 목록]
+```
+
+만든 장: todo-filter
+맡는 파일
+- todo-app/src/App.jsx

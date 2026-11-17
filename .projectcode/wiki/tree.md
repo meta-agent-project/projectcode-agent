@@ -1,14 +1,14 @@
 # 폴더 구조
 
-비교 기준: done/todo-components. 새로 생긴 파일과 고친 파일을 표시했다.
+비교 기준: done/todo-edit. 새로 생긴 파일과 고친 파일을 표시했다.
 
 ```
 todo-app/
   src/
     App.jsx   고침
-    index.css   고침
+    index.css
     main.jsx
-    TodoItem.jsx   고침
+    TodoItem.jsx
   .prettierrc
   index.html
   package-lock.json
