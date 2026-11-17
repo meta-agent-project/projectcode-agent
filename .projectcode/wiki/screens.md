@@ -2,6 +2,6 @@
 
 ## 첫 화면
 처음 나온 장: project-setup
-마지막 사진 장: todo-toggle
+마지막 사진 장: todo-delete
 
-![첫 화면](../chapters/todo-toggle/captures/done-첫-화면.png)
+![첫 화면](../chapters/todo-delete/captures/done-첫-화면.png)

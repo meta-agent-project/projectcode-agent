@@ -45,3 +45,17 @@ flowchart LR
 맡는 파일
 - todo-app/src/App.jsx
 - todo-app/src/index.css
+
+## 할 일 삭제
+
+```mermaid
+flowchart LR
+  A[삭제 버튼] --> B[handleDelete]
+  B --> C[todos state]
+  C --> D[할 일 목록]
+```
+
+만든 장: todo-delete
+맡는 파일
+- todo-app/src/App.jsx
+- todo-app/src/index.css
