@@ -56,13 +56,22 @@ export default function App() {
         <button className="button button-primary">추가</button>
       </form>
       <div className="row">
-        <button className="button" onClick={() => setFilter("all")}>
+        <button
+          className={filter === "all" ? "button button-primary" : "button"}
+          onClick={() => setFilter("all")}
+        >
           전체
         </button>
-        <button className="button" onClick={() => setFilter("active")}>
+        <button
+          className={filter === "active" ? "button button-primary" : "button"}
+          onClick={() => setFilter("active")}
+        >
           남은 일
         </button>
-        <button className="button" onClick={() => setFilter("done")}>
+        <button
+          className={filter === "done" ? "button button-primary" : "button"}
+          onClick={() => setFilter("done")}
+        >
           끝난 일
         </button>
       </div>
