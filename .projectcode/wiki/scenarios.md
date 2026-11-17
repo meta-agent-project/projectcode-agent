@@ -31,3 +31,17 @@ flowchart LR
 맡는 파일
 - todo-app/src/App.jsx
 - todo-app/src/index.css
+
+## 끝난 일 체크
+
+```mermaid
+flowchart LR
+  A[체크 칸] --> B[handleToggle]
+  B --> C[todos state]
+  C --> D[done 줄 긋기]
+```
+
+만든 장: todo-toggle
+맡는 파일
+- todo-app/src/App.jsx
+- todo-app/src/index.css
