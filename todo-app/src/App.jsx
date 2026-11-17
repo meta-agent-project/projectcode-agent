@@ -1,4 +1,5 @@
 import { useState } from "react"
+import TodoItem from "./TodoItem.jsx"
 
 const initialTodos = [
   { id: 1, text: "우유 사기", done: false },
@@ -43,22 +44,12 @@ export default function App() {
       </form>
       <ul className="stack todo-list">
         {todos.map((todo) => (
-          <li key={todo.id} className="row">
-            <label className="row">
-              <input
-                type="checkbox"
-                checked={todo.done}
-                onChange={() => handleToggle(todo.id)}
-              />
-              <span className={todo.done ? "done" : ""}>{todo.text}</span>
-            </label>
-            <button
-              className="button button-text"
-              onClick={() => handleDelete(todo.id)}
-            >
-              삭제
-            </button>
-          </li>
+          <TodoItem
+            key={todo.id}
+            todo={todo}
+            onToggle={handleToggle}
+            onDelete={handleDelete}
+          />
         ))}
       </ul>
     </main>
