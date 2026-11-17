@@ -17,6 +17,14 @@ export default function App() {
     setText("")
   }
 
+  function handleToggle(id) {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, done: !todo.done } : todo,
+      ),
+    )
+  }
+
   return (
     <main className="card stack todo">
       <h1 className="title">할 일</h1>
@@ -31,7 +39,16 @@ export default function App() {
       </form>
       <ul className="stack todo-list">
         {todos.map((todo) => (
-          <li key={todo.id}>{todo.text}</li>
+          <li key={todo.id}>
+            <label className="row">
+              <input
+                type="checkbox"
+                checked={todo.done}
+                onChange={() => handleToggle(todo.id)}
+              />
+              <span>{todo.text}</span>
+            </label>
+          </li>
         ))}
       </ul>
     </main>
