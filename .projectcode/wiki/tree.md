@@ -1,12 +1,12 @@
 # 폴더 구조
 
-첫 장이라 비교하지 않았다.
+비교 기준: done/project-setup. 새로 생긴 파일과 고친 파일을 표시했다.
 
 ```
 todo-app/
   src/
-    App.jsx
-    index.css
+    App.jsx   고침
+    index.css   고침
     main.jsx
   .prettierrc
   index.html
