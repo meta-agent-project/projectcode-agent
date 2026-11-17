@@ -22,7 +22,7 @@
 |---|---|---|---|---|---|
 | 1 | project-setup | 프로젝트 뼈대 | 기능 | Vite 프로젝트 구조, 실행과 테스트 방법 | 완료 |
 | 2 | todo-list | 할 일 목록 보여주기 | 기능 | 컴포넌트, JSX, map으로 목록 그리기, key | 완료 |
-| 3 | todo-add | 할 일 추가 | 기능 | useState, 입력값 state로 기억하기, form 제출 이벤트 | 마무리 중 |
+| 3 | todo-add | 할 일 추가 | 기능 | useState, 입력값 state로 기억하기, form 제출 이벤트 | 완료 |
 | 4 | todo-toggle | 완료 체크 | 기능 | map으로 새 배열 만들어 state 바꾸기, 조건에 따른 class | 진행 중 |
 | 5 | todo-delete | 할 일 삭제 | 기능 | filter로 새 배열 만들어 지우기 | 대기 |
 | 6 | todo-components | 컴포넌트 나누기 | 리팩터 | props, 함수 props, state는 부모에 두기 | 대기 |

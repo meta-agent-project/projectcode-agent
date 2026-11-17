@@ -1,0 +1,18 @@
+{
+  "chapter": "todo-add",
+  "web": "http://localhost:5173",
+  "shots": [
+    { "file": "T1-입력값-기억.png", "task": "T1", "commit": "effbf93", "screen": "첫 화면",
+      "see": "제목 아래 칸에 빨래하기가 쓰여 남아 있다",
+      "steps": [ { "fill": ["할 일을 적어 주세요", "빨래하기"] } ] },
+    { "file": "T2-목록에-추가.png", "task": "T2", "commit": "43583e4", "screen": "첫 화면",
+      "see": "목록 맨 아래에 빨래하기가 생기고 칸이 비워져 있다",
+      "steps": [ { "fill": ["할 일을 적어 주세요", "빨래하기"] }, { "click": "추가" } ] },
+    { "file": "T3-빈-칸-막기.png", "task": "T3", "commit": "8d0a1a1", "screen": "첫 화면",
+      "see": "빈 칸으로 추가를 눌러도 목록이 우유 사기, React 공부하기, 운동하기 세 개 그대로다",
+      "steps": [ { "click": "추가" } ] },
+    { "file": "done-첫-화면.png", "task": "done", "commit": "8d0a1a1", "screen": "첫 화면",
+      "see": "가운데 카드에 할 일 제목, 칸과 추가 버튼, 그 아래 우유 사기, React 공부하기, 운동하기, 빨래하기가 보이고 칸은 비어 있다",
+      "steps": [ { "fill": ["할 일을 적어 주세요", "빨래하기"] }, { "click": "추가" } ] }
+  ]
+}
