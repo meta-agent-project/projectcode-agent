@@ -1,0 +1,12 @@
+{
+  "chapter": "todo-list",
+  "web": "http://localhost:5173",
+  "shots": [
+    { "file": "T1-점-목록.png", "task": "T1", "commit": "bf6f0e1", "screen": "첫 화면",
+      "see": "카드 안에 우유 사기, React 공부하기, 운동하기가 점 목록으로 보인다" },
+    { "file": "T2-목록-모양.png", "task": "T2", "commit": "4b0857f", "screen": "첫 화면",
+      "see": "점 없이 한 줄에 하나씩 간격을 두고 보인다" },
+    { "file": "done-첫-화면.png", "task": "done", "commit": "4b0857f", "screen": "첫 화면",
+      "see": "가운데 카드에 할 일 제목 아래 우유 사기, React 공부하기, 운동하기가 점 없이 간격을 두고 보인다" }
+  ]
+}
