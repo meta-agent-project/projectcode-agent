@@ -139,3 +139,7 @@ body {
   margin: 0;
   padding: 0;
 }
+
+.todo-form .input {
+  flex: 1;
+}
