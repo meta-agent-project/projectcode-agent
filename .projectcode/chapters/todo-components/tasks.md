@@ -1,6 +1,6 @@
 # todo-components 작업
 
-- [ ] 테스트 작성
+- [x] 테스트 작성
 - [ ] T1 할 일 한 줄을 TodoItem으로 빼고 props로 넘기기
   - 근거: S1
   - 파일: todo-app/src/TodoItem.jsx, todo-app/src/App.jsx
