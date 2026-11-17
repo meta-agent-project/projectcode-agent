@@ -143,3 +143,8 @@ body {
 .todo-form .input {
   flex: 1;
 }
+
+.done {
+  color: var(--color-secondary);
+  text-decoration: line-through;
+}

@@ -46,7 +46,7 @@ export default function App() {
                 checked={todo.done}
                 onChange={() => handleToggle(todo.id)}
               />
-              <span>{todo.text}</span>
+              <span className={todo.done ? "done" : ""}>{todo.text}</span>
             </label>
           </li>
         ))}
