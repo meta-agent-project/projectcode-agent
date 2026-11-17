@@ -46,4 +46,4 @@ function handleSubmit(e) {
 - 추가 없음
 
 ## 다른 장 파일
-- todo-app/src/App.jsx, todo-app/src/index.css: project-setup
+- todo-app/src/App.jsx, todo-app/src/index.css: project-setup, todo-list

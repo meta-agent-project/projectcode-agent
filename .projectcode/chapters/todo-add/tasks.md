@@ -6,19 +6,19 @@
   - 파일: todo-app/src/App.jsx
   - 실행하면: 제목 아래 칸에 글을 쓰면 쓴 글이 칸에 남는다
   - Why: 칸의 글을 state에 담아 두어야 추가할 때 꺼내 쓸 수 있다
-  - 다른 장: project-setup
+  - 다른 장: project-setup, todo-list
 - [x] T2 추가를 누르면 목록에 더하기
   - 근거: S2
   - 파일: todo-app/src/App.jsx, todo-app/src/index.css
   - 실행하면: 빨래하기를 쓰고 추가를 누르면 목록 맨 아래에 빨래하기가 생기고 칸이 비워진다
   - Why: 목록도 state여야 바뀐 배열을 화면이 다시 그린다
-  - 다른 장: project-setup
+  - 다른 장: project-setup, todo-list
 - [x] T3 빈 칸은 추가하지 않기
   - 근거: S3
   - 파일: todo-app/src/App.jsx
   - 실행하면: 빈 칸으로 추가를 눌러도 목록이 세 개 그대로다
   - Why: 빈 줄이 목록에 쌓이지 않게 막는다
-  - 다른 장: project-setup
-- [ ] 수렴 점검
+  - 다른 장: project-setup, todo-list
+- [x] 수렴 점검
 - [ ] 캡처
 - [ ] 도식
