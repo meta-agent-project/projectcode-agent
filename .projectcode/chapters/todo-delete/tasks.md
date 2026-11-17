@@ -1,6 +1,6 @@
 # todo-delete 작업
 
-- [ ] 테스트 작성
+- [x] 테스트 작성
 - [ ] T1 삭제를 누르면 filter로 지우기
   - 근거: S1
   - 파일: todo-app/src/App.jsx
