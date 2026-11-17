@@ -1,0 +1,12 @@
+{
+  "chapter": "todo-components",
+  "web": "http://localhost:5173",
+  "shots": [
+    { "file": "T1-TodoItem-나누기.png", "task": "T1", "commit": "08b3a81", "screen": "첫 화면",
+      "see": "우유 사기를 체크하면 줄이 그어지고 운동하기를 삭제하면 우유 사기와 React 공부하기 두 줄이 남아 전처럼 동작한다",
+      "steps": [ { "click": "우유 사기" }, { "click": "삭제", "in": "운동하기" } ] },
+    { "file": "done-첫-화면.png", "task": "done", "commit": "08b3a81", "screen": "첫 화면",
+      "see": "앞 장과 같은 화면에서 우유 사기는 체크돼 줄이 그어지고 운동하기는 사라져 두 줄이 남는다",
+      "steps": [ { "click": "우유 사기" }, { "click": "삭제", "in": "운동하기" } ] }
+  ]
+}

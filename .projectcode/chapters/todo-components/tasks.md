@@ -8,5 +8,5 @@
   - Why: 한 줄을 컴포넌트로 빼야 다음 장에서 줄마다 고치기 state를 둘 수 있다
   - 다른 장: project-setup, todo-list, todo-add, todo-toggle, todo-delete
 - [x] 수렴 점검
-- [ ] 캡처
-- [ ] 도식
+- [x] 캡처
+- [x] 도식
