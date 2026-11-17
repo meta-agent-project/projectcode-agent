@@ -1,8 +1,14 @@
 import { useState } from "react"
 
-export default function TodoItem({ todo, onToggle, onDelete }) {
+export default function TodoItem({ todo, onToggle, onDelete, onEdit }) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(todo.text)
+
+  function handleSave(e) {
+    e.preventDefault()
+    onEdit(todo.id, draft)
+    setEditing(false)
+  }
 
   function handleCancel() {
     setDraft(todo.text)
@@ -11,15 +17,18 @@ export default function TodoItem({ todo, onToggle, onDelete }) {
 
   if (editing) {
     return (
-      <li className="row todo-form">
-        <input
-          className="input"
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-        />
-        <button className="button" onClick={handleCancel}>
-          취소
-        </button>
+      <li>
+        <form className="row todo-form" onSubmit={handleSave}>
+          <input
+            className="input"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+          />
+          <button className="button button-primary">저장</button>
+          <button type="button" className="button" onClick={handleCancel}>
+            취소
+          </button>
+        </form>
       </li>
     )
   }
