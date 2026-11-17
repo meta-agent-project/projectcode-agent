@@ -5,6 +5,7 @@
 |---|---|---|
 | todo-app/src/TodoItem.jsx | 고침 | 고치기 state, 고치는 칸과 원래 줄 바꿔 그리기 |
 | todo-app/src/App.jsx | 고침 | 글 바꾸기 함수를 props로 넘긴다 |
+| todo-app/src/index.css | 고침 | 고치는 칸 줄의 입력 칸이 줄어들 수 있게 한다 |
 | tests/todo-edit/edit.test.jsx | 새로 | 수정, 저장, 취소, 빈 칸 확인 |
 
 ## 코드 계획
@@ -16,6 +17,9 @@ TodoItem.jsx
 - 취소는 draft를 todo.text로 되돌리고 editing을 끈다
 - 저장은 form onSubmit에서 새로고침을 막고, 빈 글이 아니면 onEdit(todo.id, draft)를 부르고 editing을 끈다
 - 고치는 칸 줄은 todo-form 클래스로 칸이 남은 너비를 채운다. 저장은 button-primary, 취소는 button, 수정은 button-text다
+
+index.css
+- .todo-form .input에 min-width 0을 더해 칸이 줄어들 수 있게 한다
 
 App.jsx
 - handleEdit(id, text)는 todos.map으로 그 id만 text를 바꾼 새 배열을 setTodos한다
@@ -44,8 +48,8 @@ function handleEdit(id, text) {
 ## 할 일 연결
 | 할 일 | 파일 |
 |---|---|
-| S1 | TodoItem.jsx |
-| S2 | TodoItem.jsx, App.jsx |
+| S1 | TodoItem.jsx, index.css |
+| S2 | TodoItem.jsx, App.jsx, index.css |
 | S3 | TodoItem.jsx |
 
 ## 라이브러리
@@ -54,3 +58,4 @@ function handleEdit(id, text) {
 ## 다른 장 파일
 - todo-app/src/App.jsx: project-setup, todo-list, todo-add, todo-toggle, todo-delete, todo-components
 - todo-app/src/TodoItem.jsx: todo-components
+- todo-app/src/index.css: project-setup, todo-list, todo-add, todo-toggle, todo-delete

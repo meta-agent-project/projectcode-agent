@@ -26,8 +26,8 @@
 | 4 | todo-toggle | 완료 체크 | 기능 | map으로 새 배열 만들어 state 바꾸기, 조건에 따른 class | 완료 |
 | 5 | todo-delete | 할 일 삭제 | 기능 | filter로 새 배열 만들어 지우기 | 완료 |
 | 6 | todo-components | 컴포넌트 나누기 | 리팩터 | props, 함수 props, state는 부모에 두기 | 완료 |
-| 7 | todo-edit | 할 일 수정 | 기능 | 조건부 렌더링, 자식 컴포넌트 안의 state | 마무리 중 |
-| 8 | todo-filter | 골라 보기 | 기능 | state에서 계산한 값, 선택된 버튼 표시 | 진행 중 |
+| 7 | todo-edit | 할 일 수정 | 기능 | 조건부 렌더링, 자식 컴포넌트 안의 state | 진행 중 |
+| 8 | todo-filter | 골라 보기 | 기능 | state에서 계산한 값, 선택된 버튼 표시 | 멈춤 |
 
 ## 미룬 것
 - 남은 할 일 개수 표시
