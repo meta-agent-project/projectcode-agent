@@ -21,6 +21,6 @@
   - 파일: todo-app/package.json, todo-app/.prettierrc, todo-app/src/index.css
   - 실행하면: npm run format을 하면 src 코드 모양이 한 가지로 맞춰진다
   - Why: 학생과 강사의 코드 모양이 같아야 따라치기 diff가 깔끔하다
-- [ ] 수렴 점검
+- [x] 수렴 점검
 - [ ] 캡처
 - [ ] 도식

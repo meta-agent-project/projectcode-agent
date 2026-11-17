@@ -25,6 +25,7 @@ vite.config.js
 - React 플러그인을 쓴다
 - 테스트는 바깥 tests 폴더의 파일을 찾고 jsdom 환경에서 돌린다
 - 바깥 폴더 테스트가 todo-app의 라이브러리를 찾도록 맞춘다
+- 바깥 tests 폴더 파일을 읽도록 허락한다
 
 .prettierrc
 - 세미콜론 없음, 나머지는 기본값
@@ -38,7 +39,7 @@ App.jsx
 - 안에 title 클래스 제목 할 일, muted 클래스 문장 아직 할 일이 없어요
 
 index.css
-- .claude/skills/projectcode-mockup/base.css를 그대로 복사한다
+- .claude/skills/projectcode-mockup/base.css를 주석만 빼고 복사한다
 - 맨 아래에 .todo 폼 너비와 가운데 정렬 한 줄을 더한다
 
 app.test.jsx
@@ -59,8 +60,8 @@ createRoot(document.getElementById("root")).render(<App />)
 |---|---|
 | S1 | package.json, index.html, vite.config.js, main.jsx, App.jsx |
 | S2 | index.css, App.jsx |
-| S3 | vite.config.js, package.json, app.test.jsx |
-| S4 | .prettierrc, package.json |
+| S3 | vite.config.js, package.json, app.test.jsx (S1 테스트를 실행해 통과를 본다) |
+| S4 | .prettierrc, package.json, index.css |
 
 ## 라이브러리
 - jsdom 추가: 테스트에서 화면을 그리는 가짜 브라우저
