@@ -54,14 +54,19 @@ async function takeScreen(browser, shot) {
   })
   await page.goto(spec.web + (shot.path || "/"))
   for (const step of shot.steps || []) {
+    // in이 있으면 그 글자가 든 목록 줄 안에서만 찾는다. 같은 버튼이 줄마다 있을 때 쓴다
+    const scope = step.in ? page.getByRole("listitem").filter({ hasText: step.in }) : page
     if (step.fill) {
       // label이 없는 칸은 placeholder로 찾는다
-      const byLabel = page.getByLabel(step.fill[0])
-      const field = (await byLabel.count()) > 0 ? byLabel : page.getByPlaceholder(step.fill[0])
-      await field.fill(step.fill[1])
+      const byLabel = scope.getByLabel(step.fill[0])
+      const field = (await byLabel.count()) > 0 ? byLabel : scope.getByPlaceholder(step.fill[0])
+      await field.first().fill(step.fill[1])
     }
     if (step.click) {
-      await page.getByRole("button", { name: step.click }).click()
+      // 버튼이 없으면 글자로 찾는다. label 글자를 누르면 체크 칸이 바뀐다
+      const button = scope.getByRole("button", { name: step.click, exact: true })
+      const target = (await button.count()) > 0 ? button : scope.getByText(step.click, { exact: true })
+      await target.first().click()
       // 이미 조용했던 페이지는 networkidle이 바로 끝나므로 응답과 이동을 기다린다
       await page.waitForTimeout(1000)
     }

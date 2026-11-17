@@ -141,7 +141,7 @@ projectcode-fix의 샌드박스가 이 순서를 쓴다. 다른 점은 둘이다
 | screen | 찍은 화면 |
 | see | 보이는 것. 확인 기준이자 captures.md의 칸이다 |
 | path | 화면 주소. 없으면 / |
-| steps | 찍기 전에 할 일. fill은 [라벨 또는 placeholder, 값], click은 버튼 글자, reload는 true면 새로고침, goto는 옮겨 갈 화면 주소 |
+| steps | 찍기 전에 할 일. fill은 [라벨 또는 placeholder, 값], click은 버튼 글자(버튼이 없으면 그 글자, label 글자를 누르면 체크 칸이 바뀐다), in은 그 글자가 든 목록 줄 안에서만 찾기, reload는 true면 새로고침, goto는 옮겨 갈 화면 주소 |
 | console | true면 콘솔 기록과 Uncaught 에러를 .console.txt로 남긴다 |
 | storage | true면 찍을 때의 localStorage를 .storage.json으로 남긴다 |
 | requests | true면 서버로 간 요청의 주소, 토큰, 보낸 값, 응답 상태를 .requests.json으로 남긴다 |
