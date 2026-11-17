@@ -1,6 +1,6 @@
 # todo-edit 작업
 
-- [ ] 테스트 작성
+- [x] 테스트 작성
 - [ ] T1 수정을 누르면 고치는 칸으로 바꿔 그리기
   - 근거: S1
   - 파일: todo-app/src/TodoItem.jsx
