@@ -1,0 +1,15 @@
+{
+  "chapter": "todo-toggle",
+  "web": "http://localhost:5173",
+  "shots": [
+    { "file": "T1-체크-칸.png", "task": "T1", "commit": "a7ad443", "screen": "첫 화면",
+      "see": "할 일마다 체크 칸이 있고 우유 사기의 체크 칸이 체크돼 있다",
+      "steps": [ { "click": "우유 사기" } ] },
+    { "file": "T2-줄-긋기.png", "task": "T2", "commit": "b8cd497", "screen": "첫 화면",
+      "see": "체크한 우유 사기에 줄이 그어지고 흐린 글자로 보인다",
+      "steps": [ { "click": "우유 사기" } ] },
+    { "file": "done-첫-화면.png", "task": "done", "commit": "b8cd497", "screen": "첫 화면",
+      "see": "우유 사기는 체크되어 줄 그은 흐린 글자이고 나머지 두 할 일은 그대로 보인다",
+      "steps": [ { "click": "우유 사기" } ] }
+  ]
+}

@@ -14,5 +14,5 @@
   - Why: state 값에 따라 class를 바꾸면 모양도 데이터를 따라간다
   - 다른 장: project-setup, todo-list, todo-add
 - [x] 수렴 점검
-- [ ] 캡처
-- [ ] 도식
+- [x] 캡처
+- [x] 도식
