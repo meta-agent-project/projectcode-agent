@@ -1,6 +1,6 @@
 # project-setup 작업
 
-- [ ] 테스트 작성
+- [x] 테스트 작성
 - [ ] T1 Vite로 첫 화면 띄우기
   - 근거: S1
   - 파일: todo-app/package.json, todo-app/index.html, todo-app/vite.config.js, todo-app/src/main.jsx, todo-app/src/App.jsx

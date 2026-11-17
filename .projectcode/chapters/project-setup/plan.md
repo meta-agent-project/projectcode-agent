@@ -10,7 +10,7 @@
 | todo-app/src/main.jsx | 새로 | App을 root에 그린다, CSS를 불러온다 |
 | todo-app/src/App.jsx | 새로 | 첫 화면 |
 | todo-app/src/index.css | 새로 | base.css 복사와 카드 배치 한 줄 |
-| tests/project-setup.test.jsx | 새로 | 첫 화면 제목 확인 |
+| tests/project-setup/app.test.jsx | 새로 | 첫 화면 제목 확인 |
 
 ## 코드 계획
 package.json
@@ -41,7 +41,7 @@ index.css
 - .claude/skills/projectcode-mockup/base.css를 그대로 복사한다
 - 맨 아래에 .todo 폼 너비와 가운데 정렬 한 줄을 더한다
 
-project-setup.test.jsx
+app.test.jsx
 - App을 그리고 제목 할 일이 보이는지 확인한다
 
 ## 핵심 코드
@@ -59,7 +59,7 @@ createRoot(document.getElementById("root")).render(<App />)
 |---|---|
 | S1 | package.json, index.html, vite.config.js, main.jsx, App.jsx |
 | S2 | index.css, App.jsx |
-| S3 | vite.config.js, package.json, project-setup.test.jsx |
+| S3 | vite.config.js, package.json, app.test.jsx |
 | S4 | .prettierrc, package.json |
 
 ## 라이브러리
