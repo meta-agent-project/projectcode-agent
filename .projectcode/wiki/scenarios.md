@@ -61,3 +61,20 @@ flowchart LR
 - todo-app/src/TodoItem.jsx
 - todo-app/src/App.jsx
 - todo-app/src/index.css
+
+## 할 일 수정
+
+```mermaid
+flowchart LR
+  A[TodoItem 수정 버튼] --> B[editing state]
+  B --> C[고치는 칸 draft]
+  C --> D[handleEdit]
+  D --> E[todos state]
+  E --> F[할 일 목록]
+```
+
+만든 장: todo-edit
+맡는 파일
+- todo-app/src/TodoItem.jsx
+- todo-app/src/App.jsx
+- todo-app/src/index.css
