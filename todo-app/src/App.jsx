@@ -8,7 +8,7 @@ export default function App() {
   return (
     <main className="card stack todo">
       <h1 className="title">할 일</h1>
-      <ul>
+      <ul className="stack todo-list">
         {todos.map((todo) => (
           <li key={todo.id}>{todo.text}</li>
         ))}
