@@ -11,7 +11,7 @@
   - 파일: todo-app/src/index.css, todo-app/src/main.jsx, todo-app/src/App.jsx
   - 실행하면: 첫 화면이 가운데 테두리 카드 안에 들어가 보인다
   - Why: 뒤 장의 모든 화면이 같은 공통 스타일 위에서 만들어진다
-- [ ] T3 테스트 실행기 붙이기
+- [x] T3 테스트 실행기 붙이기
   - 근거: S3
   - 파일: todo-app/package.json, todo-app/vite.config.js
   - 실행하면: npm test에서 첫 화면 제목 테스트가 통과한다
