@@ -16,9 +16,9 @@
   - 파일: todo-app/package.json, todo-app/vite.config.js
   - 실행하면: npm test에서 첫 화면 제목 테스트가 통과한다
   - Why: 장마다 쓴 행동 테스트를 명령 하나로 돌려 확인한다
-- [ ] T4 포맷 도구 붙이기
+- [x] T4 포맷 도구 붙이기
   - 근거: S4
-  - 파일: todo-app/package.json, todo-app/.prettierrc
+  - 파일: todo-app/package.json, todo-app/.prettierrc, todo-app/src/index.css
   - 실행하면: npm run format을 하면 src 코드 모양이 한 가지로 맞춰진다
   - Why: 학생과 강사의 코드 모양이 같아야 따라치기 diff가 깔끔하다
 - [ ] 수렴 점검

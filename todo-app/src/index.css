@@ -23,7 +23,9 @@
   --width-form: 420px;
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
@@ -41,14 +43,35 @@ body {
   border-bottom: 1px solid var(--color-line);
 }
 
-.header nav { display: flex; gap: var(--space-m); color: var(--color-secondary); font-size: var(--text-small); }
+.header nav {
+  display: flex;
+  gap: var(--space-m);
+  color: var(--color-secondary);
+  font-size: var(--text-small);
+}
 
-.page { max-width: var(--width-page); margin: 0 auto; padding: var(--space-l); }
+.page {
+  max-width: var(--width-page);
+  margin: 0 auto;
+  padding: var(--space-l);
+}
 
-.title { font-size: var(--text-title); font-weight: 700; margin: 0; }
+.title {
+  font-size: var(--text-title);
+  font-weight: 700;
+  margin: 0;
+}
 
-.stack { display: flex; flex-direction: column; gap: var(--space-m); }
-.row { display: flex; align-items: center; gap: var(--space-m); }
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-m);
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-m);
+}
 
 .card {
   border: 1.5px solid var(--color-primary);
@@ -56,8 +79,15 @@ body {
   padding: var(--space-l);
 }
 
-.field { display: flex; flex-direction: column; gap: var(--space-s); }
-.label { font-size: var(--text-small); color: var(--color-secondary); }
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s);
+}
+.label {
+  font-size: var(--text-small);
+  color: var(--color-secondary);
+}
 
 .input {
   height: var(--height-control);
@@ -79,10 +109,27 @@ body {
   cursor: pointer;
 }
 
-.button-primary { background: var(--color-primary); color: var(--color-bg); }
-.button-text { border-color: transparent; color: var(--color-secondary); padding: 0 var(--space-s); }
+.button-primary {
+  background: var(--color-primary);
+  color: var(--color-bg);
+}
+.button-text {
+  border-color: transparent;
+  color: var(--color-secondary);
+  padding: 0 var(--space-s);
+}
 
-.muted { color: var(--color-secondary); font-size: var(--text-small); }
-.mono { font-family: var(--font-mono); font-size: var(--text-small); color: var(--color-secondary); }
+.muted {
+  color: var(--color-secondary);
+  font-size: var(--text-small);
+}
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+  color: var(--color-secondary);
+}
 
-.todo { max-width: var(--width-form); margin: var(--space-l) auto; }
+.todo {
+  max-width: var(--width-form);
+  margin: var(--space-l) auto;
+}
