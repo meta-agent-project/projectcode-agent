@@ -1,4 +1,29 @@
+import { useState } from "react"
+
 export default function TodoItem({ todo, onToggle, onDelete }) {
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState(todo.text)
+
+  function handleCancel() {
+    setDraft(todo.text)
+    setEditing(false)
+  }
+
+  if (editing) {
+    return (
+      <li className="row todo-form">
+        <input
+          className="input"
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+        />
+        <button className="button" onClick={handleCancel}>
+          취소
+        </button>
+      </li>
+    )
+  }
+
   return (
     <li className="row">
       <label className="row">
@@ -9,6 +34,9 @@ export default function TodoItem({ todo, onToggle, onDelete }) {
         />
         <span className={todo.done ? "done" : ""}>{todo.text}</span>
       </label>
+      <button className="button button-text" onClick={() => setEditing(true)}>
+        수정
+      </button>
       <button className="button button-text" onClick={() => onDelete(todo.id)}>
         삭제
       </button>
