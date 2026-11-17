@@ -6,7 +6,7 @@
 flowchart LR
   A[index.html] --> B[main.jsx]
   B --> C[App]
-  C --> D[todos 배열]
+  C --> D[todos state]
   D --> E[할 일 목록]
 ```
 
@@ -14,5 +14,20 @@ flowchart LR
 맡는 파일
 - todo-app/index.html
 - todo-app/src/main.jsx
+- todo-app/src/App.jsx
+- todo-app/src/index.css
+
+## 할 일 추가
+
+```mermaid
+flowchart LR
+  A[입력 칸] --> B[text state]
+  B --> C[handleSubmit]
+  C --> D[todos state]
+  D --> E[할 일 목록]
+```
+
+만든 장: todo-add
+맡는 파일
 - todo-app/src/App.jsx
 - todo-app/src/index.css
