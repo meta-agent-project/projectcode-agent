@@ -13,6 +13,6 @@
   - 실행하면: 남은 일을 누르면 남은 일 버튼만 진하게 바뀐다
   - Why: 지금 어떤 목록을 보고 있는지 버튼 모양으로 알려준다
   - 다른 장: project-setup, todo-list, todo-add, todo-toggle, todo-delete, todo-components, todo-edit
-- [ ] 수렴 점검
+- [x] 수렴 점검
 - [ ] 캡처
 - [ ] 도식
